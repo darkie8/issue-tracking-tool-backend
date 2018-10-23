@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
- const Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-  const date = require('./../libs/timeLib')
+const date = require('./../libs/timeLib')
 let userSchema = new Schema({
   userId: {
     type: String,
@@ -29,18 +29,26 @@ let userSchema = new Schema({
     type: Number,
     default: 000000
   },
-  createdOn :{
-    type:Date,
-    default:""
+  createdOn: {
+    type: Date,
+    default: ""
   },
-issues: {
-  type: Array,
-  default: ['issue', 'issue1']
-},
-active: {
-  type: Boolean,
-  default: false
-}
+  modifiedOn: {
+    type: Date,
+    default: ""
+  },
+  issues: {
+    type: Array,
+    default: ['issue', 'issue1']
+  },
+  active: {
+    type: Boolean,
+    default: false
+  },
+  profilePicture: {
+    type: string,
+    default: ''
+  }
 
 })
 
