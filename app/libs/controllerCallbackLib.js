@@ -7,6 +7,10 @@ let crudCallback = (err, result, res, function1) => {
         loggererr = 'getAllUser'
         msg = ['Failed To get users details', 'No User Found', 'Users details found']
 
+    } else if (function1 == 'allModerators') {
+        loggererr = 'allModerators'
+        msg = ['Failed To get moderators details', 'No moderator Found', 'Moderator details found']
+
     } else if (function1 == 'getSingleUser') {
         loggererr = 'getSingleUser'
         msg = ['Failed To get user details', 'No User Found', 'User details found']

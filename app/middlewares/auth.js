@@ -8,6 +8,8 @@ const Auth = mongoose.model('Auth')
 const logger = require('./../libs/loggerLib')
 const responseLib = require('./../libs/responseLib')
 const check = require('./../libs/checkLib')
+const passwordLib = require('./../libs/generatePasswordLib');
+const admin_pass = 'admin_level10_#'
 
 let isAuthenticated = (req, res, next) => {
   console.log(`------------ inside isAuthenticated function-----------------`)
@@ -61,43 +63,14 @@ let isAuthenticated = (req, res, next) => {
   }
 }
 
-let isAuthorized = (req, res, next) => {
-  console.log('--- inside isAuthorized function ---')
+let adminPrivilage = (req,res,next) => {
 
-  if (req.params.apiKey || req.query.apiKey || req.body.apiKey || req.header('apiKey')) {
-    let apiKey = req.params.apiKey || req.query.apiKey || req.body.apiKey || req.header('apiKey')
-      let options = {
-        method:'GET',
-        uri:`https://gateways.edwisor.com/user-gateway/api/v1/user/project/auth?edProjectAuth=${apiKey}`
-      }
-      request(options,(err,response,body)=>{
-       // console.log(body)
-       if(err) {
-         let apiResponse = responseLib.generate(true,'Failed To Validate Your Token',500, null)
-           res.send(apiResponse)
-       } else if(response.statusCode === 200) {
-         body = JSON.parse(body)
-          if(body.status === 200) {
-              req.user = {fullName: `${body.data.firstName} ${body.data.lastName}`,firstName:body.data.firstName,lastName:body.data.lastName,email:body.data.email,mobileNumber: body.data.mobileNumber}
-              next();
-          } else {
-            let apiResponse = responseLib.generate(true,'Expired Or Invalid Authentication Token',400, null)
-              res.send(apiResponse)
-          }
-        } else {
-            let apiResponse = responseLib.generate(true,'Could Not Fetch Token Details',400, null)
-            res.send(apiResponse)
-        }
-      })
+  if (req.params.privilage || req.query.privilage || req.body.privilage || req.header('privilage')) {
+    
+    }
 
-    } else {
-    logger.error('Authentication Token Missing', 'Authentication Middleware', 5)
-    let apiResponse = responseLib.generate(true, 'Authentication Token Is Missing In Request', 403, null)
-    res.send(apiResponse)
-  }
 }
 
 module.exports = {
-  isAuthenticated: isAuthenticated,
-  isAuthorized: isAuthorized
+  isAuthenticated: isAuthenticated
 }
