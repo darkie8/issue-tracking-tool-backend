@@ -68,7 +68,9 @@ let editUserName = (req, res) => {
 let editAcountactivation = (req, res) => {
     UserModel.update({
         'userId': req.params.userId
-    },{active: true}).exec((err, result) => {
+    }, {
+        active: true
+    }).exec((err, result) => {
         callback.crudCallback(err, result, res, 'editAcountactivation')
     })
 }
@@ -78,33 +80,33 @@ let editAcountactivation = (req, res) => {
 let signUpFunction = (req, res) => {
 
     let validateUserInput = () => {
-        if (req.body.email) {
+        return new Promise((resolve, reject) => {if (req.body.email) {
             if (!validateInput.Email(req.body.email)) {
                 let apiResponse = response.generate(true, 'Email Does not meet the requirement', 400, null)
-                return Promise.reject(apiResponse)
+                return reject(apiResponse)
             } else if (check.isEmpty(req.body.password)) {
                 let apiResponse = response.generate(true, '"password" parameter is missing"', 400, null)
-                return Promise.reject(apiResponse)
+                return reject(apiResponse)
             } else {
-                return Promise.resolve(req)
+                return resolve(req)
             }
         } else {
             logger.error('Field Missing During User Creation', 'userController: createUser()', 5)
             let apiResponse = response.generate(true, 'One or More Parameter(s) is missing', 400, null)
-            return Promise.reject(apiResponse)
-        }
+            return reject(apiResponse)
+        }})
 
     } // end validate user input
 
     let createUser = () => {
-        UserModel.findOne({
+        return new Promise((resolve, reject) => { UserModel.findOne({
                 'email': req.body.email
             })
             .exec((err, retrievedUserDetails) => {
                 if (err) {
                     logger.error(err.message, 'userController: createUser', 10)
                     let apiResponse = response.generate(true, 'Failed To Create User', 500, null)
-                    return Promise.reject(apiResponse)
+                    return reject(apiResponse)
                 } else if (check.isEmpty(retrievedUserDetails)) {
                     console.log(req.body)
                     let newUser = new UserModel({
@@ -124,22 +126,22 @@ let signUpFunction = (req, res) => {
                             console.log(err)
                             logger.error(err.message, 'userController: createUser', 10)
                             let apiResponse = response.generate(true, 'Failed to create new User', 500, null)
-                            return Promise.reject(apiResponse)
+                            return reject(apiResponse)
                         } else {
                             let newUserObj = newUser.toObject();
                             let subject = 'To activate Issus acount'
                             let text = 'Please click the link to activate the account'
                             let html = `<p><a href='http://localhost:3000/api/v1/users/${newUserObj.userId}/verify'>Click here to activate your account</a></p>`
-                            mailer.messageSend(issue_tracking_mail.web.user,newUserObj.email,subject,text,html)
-                            return Promise.resolve(newUserObj)
+                            mailer.messageSend(issue_tracking_mail.web.user, newUserObj.email, subject, text, html)
+                            return resolve(newUserObj)
                         }
                     })
                 } else {
                     logger.error('User Cannot Be Created.User Already Present', 'userController: createUser', 4)
                     let apiResponse = response.generate(true, 'User Already Present With this Email', 403, null)
-                    return Promise.reject(apiResponse)
+                    return reject(apiResponse)
                 }
-            })
+            })})
 
     } // end create user function
 
@@ -165,31 +167,35 @@ let loginFunction = (req, res) => {
     // check if user exists 
     let findUser = () => {
         console.log("findUser");
-        if (req.body.email) {
-            console.log("req body email is there");
-            console.log(req.body);
-            UserModel.findOne({
-                'email': req.body.email
-            }, (err, userDetails) => {
-                if (err) {
-                    console.log(err)
-                    logger.error('Failed To Retrieve User Data', 'userController: findUser()', 10)
-                    let apiResponse = response.generate(true, 'Failed To Find User Details', 500, null)
-                    return Promise.reject(apiResponse)
-                } else if (check.isEmpty(userDetails)) {
-                    logger.error('No User Found', 'userController: findUser()', 7)
-                    let apiResponse = response.generate(true, 'No User Details Found', 404, null)
-                    return Promise.reject(apiResponse)
-                } else {
-                    logger.info('User Found', 'userController: findUser()', 10)
-                    return Promise.resolve(userDetails)
-                }
-            });
+        return new Promise((resolve, reject) => {
+            if (req.body.email) {
+                console.log("req body email is there");
+                console.log(req.body);
 
-        } else {
-            let apiResponse = response.generate(true, '"email" parameter is missing', 400, null)
-            return Promise.reject(apiResponse)
-        }
+                UserModel.findOne({
+                    'email': req.body.email
+                }, (err, userDetails) => {
+                    if (err) {
+                        console.log(err)
+                        logger.error('Failed To Retrieve User Data', 'userController: findUser()', 10)
+                        let apiResponse = response.generate(true, 'Failed To Find User Details', 500, null)
+                        return reject(apiResponse)
+                    } else if (check.isEmpty(userDetails)) {
+                        logger.error('No User Found', 'userController: findUser()', 7)
+                        let apiResponse = response.generate(true, 'No User Details Found', 404, null)
+                        return reject(apiResponse)
+                    } else {
+                        logger.info('User Found', 'userController: findUser()', 10)
+                        return resolve(userDetails)
+                    }
+                });
+
+
+            } else {
+                let apiResponse = response.generate(true, '"email" parameter is missing', 400, null)
+                return reject(apiResponse)
+            }
+        })
 
     }
 
@@ -198,25 +204,27 @@ let loginFunction = (req, res) => {
     let validatePassword = (retrievedUserDetails) => {
         console.log("validatePassword");
 
-        passwordLib.comparePassword(req.body.password, retrievedUserDetails.password, (err, isMatch) => {
-            if (err) {
-                console.log(err)
-                logger.error(err.message, 'userController: validatePassword()', 10)
-                let apiResponse = response.generate(true, 'Login Failed', 500, null)
-                return Promise.reject(apiResponse)
-            } else if (isMatch) {
-                let retrievedUserDetailsObj = retrievedUserDetails.toObject()
-                delete retrievedUserDetailsObj.password
-                delete retrievedUserDetailsObj._id
-                delete retrievedUserDetailsObj.__v
-                delete retrievedUserDetailsObj.createdOn
-                delete retrievedUserDetailsObj.modifiedOn
-                return Promise.resolve(retrievedUserDetailsObj)
-            } else {
-                logger.info('Login Failed Due To Invalid Password', 'userController: validatePassword()', 10)
-                let apiResponse = response.generate(true, 'Wrong Password.Login Failed', 400, null)
-                return Promise.reject(apiResponse)
-            }
+        return new Promise((resolve, reject) => {
+            passwordLib.comparePassword(req.body.password, retrievedUserDetails.password, (err, isMatch) => {
+                if (err) {
+                    console.log(err)
+                    logger.error(err.message, 'userController: validatePassword()', 10)
+                    let apiResponse = response.generate(true, 'Login Failed', 500, null)
+                    return reject(apiResponse)
+                } else if (isMatch) {
+                    let retrievedUserDetailsObj = retrievedUserDetails.toObject()
+                    delete retrievedUserDetailsObj.password
+                    delete retrievedUserDetailsObj._id
+                    delete retrievedUserDetailsObj.__v
+                    delete retrievedUserDetailsObj.createdOn
+                    delete retrievedUserDetailsObj.modifiedOn
+                    return resolve(retrievedUserDetailsObj)
+                } else {
+                    logger.info('Login Failed Due To Invalid Password', 'userController: validatePassword()', 10)
+                    let apiResponse = response.generate(true, 'Wrong Password.Login Failed', 400, null)
+                    return reject(apiResponse)
+                }
+            })
         })
 
     }
@@ -226,35 +234,37 @@ let loginFunction = (req, res) => {
     let activeStatcheck = (details) => {
         console.log('checking if the acount is active or not');
 
-        if (!details.active) {
-            logger.error('Acount is not active, please go to respective email address to active this account', 'userController: activeStatcheck()', 10)
-            let apiResponse = response.generate(true, 'Acount is not active, please go to respective email address to active this account', 401, null)
-            return Promise.reject(apiResponse)
-        } else if (check.isEmpty(details.active)) {
-            logger.error('Acount is not active, undefined active status, please check frontend', 'userController: activeStatcheck()', 10)
-            let apiResponse = response.generate(true, 'Acount is not active, undefined active status, please check frontend', 401, null)
-            return Promise.reject(apiResponse)
-        } else {
-            logger.info('Acount is active', 'userController: activeStatcheck()', 5)
-            return Promise.resolve(details)
-        }
+        return new Promise((resolve, reject) => {
+            if (!details.active) {
+                logger.error('Acount is not active, please go to respective email address to active this account', 'userController: activeStatcheck()', 10)
+                let apiResponse = response.generate(true, 'Acount is not active, please go to respective email address to active this account', 401, null)
+                return reject(apiResponse)
+            } else if (check.isEmpty(details.active)) {
+                logger.error('Acount is not active, undefined active status, please check frontend', 'userController: activeStatcheck()', 10)
+                let apiResponse = response.generate(true, 'Acount is not active, undefined active status, please check frontend', 401, null)
+                return reject(apiResponse)
+            } else {
+                logger.info('Acount is active', 'userController: activeStatcheck()', 5)
+                return resolve(details)
+            }
+        })
     }
 
     // generate token
 
     let generateToken = (userDetails) => {
         console.log("generate token");
-        token.generateToken(userDetails, (err, tokenDetails) => {
+        return new Promise((resolve, reject) => {token.generateToken(userDetails, (err, tokenDetails) => {
             if (err) {
                 console.log(err)
                 let apiResponse = response.generate(true, 'Failed To Generate Token', 500, null)
-                return Promise.reject(apiResponse)
+                return reject(apiResponse)
             } else {
                 tokenDetails.userId = userDetails.userId
                 tokenDetails.userDetails = userDetails
-                return Promise.resolve(tokenDetails)
+                return resolve(tokenDetails)
             }
-        })
+        })})
 
     }
 
@@ -262,12 +272,12 @@ let loginFunction = (req, res) => {
 
     let saveToken = (tokenDetails) => {
         console.log('saving token details');
-        authModel.findOne({
+        return new Promise((resolve, reject) => { authModel.findOne({
             'userId': tokenDetails.userId
         }, (err, retrievedTokenDetails) => {
             if (err) {
                 logger.error(err.message, 'internal server error: saveToken', 10)
-                return Promise.reject(response.generate(true, 'failed to generate Token', 500, null))
+                return reject(response.generate(true, 'failed to generate Token', 500, null))
             } else if (check.isEmpty(retrievedTokenDetails)) {
                 let authToken = new authModel({
                     userId: tokenDetails.userId,
@@ -279,13 +289,13 @@ let loginFunction = (req, res) => {
                 authToken.save((err, newTokenDetails) => {
                     if (err) {
                         logger.error(true, 'userControl: saveToken', 10)
-                        return Promise.reject(response.generate(true, 'failed to generate Token', 500, null))
+                        return reject(response.generate(true, 'failed to generate Token', 500, null))
                     } else {
                         let responseBody = {
                             authToken: newTokenDetails.authToken,
                             userDetails: tokenDetails.userDetails
                         }
-                        return Promise.resolve(responseBody)
+                        return resolve(responseBody)
 
                     }
                 })
@@ -299,17 +309,17 @@ let loginFunction = (req, res) => {
                         console.log(err)
                         logger.error(err.message, 'userController: saveToken', 10)
                         let apiResponse = response.generate(true, 'Failed To Generate Token', 500, null)
-                        return Promise.reject(apiResponse)
+                        return reject(apiResponse)
                     } else {
                         let responseBody = {
                             authToken: newTokenDetails.authToken,
                             userDetails: tokenDetails.userDetails
                         }
-                        return Promise.resolve(responseBody)
+                        return resolve(responseBody)
                     }
                 })
             }
-        })
+        })})
     }
 
     // execute the functions
