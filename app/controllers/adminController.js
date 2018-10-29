@@ -10,13 +10,23 @@ const moderatorModel = mongoose.model('moderator');
 
 
 // get all moderator's name 
-let allModerators = (req,res) => {
+let allModerators = (req, res) => {
     moderatorModel.find()
-    .select(' -__v -_id -id ')
-    .lean()
-    .exec((err,res)=> {
-        callback.crudCallback(err, result, res, 'allModerators')
-    })
+        .select(' -__v -_id -id ')
+        .lean()
+        .exec((err, res) => {
+            callback.crudCallback(err, result, res, 'allModerators')
+        })
 }
 
 // get single moderator's name 
+let getSingleModerator = (req, res) => {
+    moderatorModel.find()
+        .select(' -__v -_id -id ')
+        .lean()
+        .exec((err, res) => {
+            callback.crudCallback(err, result, res, 'getSingleModerator')
+        })
+}
+
+let createModerator = () => {}

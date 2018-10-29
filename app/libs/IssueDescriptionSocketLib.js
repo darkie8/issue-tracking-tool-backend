@@ -10,9 +10,6 @@ const check = require("./checkLib");
 const response = require('./responseLib')
 const redisLib = require("./redisLib");
 
-// models 
-const roomModel = mongoose.model('chatRoom_change')
-const UserModel = mongoose.model('User_change')
 
 let setServer =(server) => {
     let io =  socketio.listen(server)

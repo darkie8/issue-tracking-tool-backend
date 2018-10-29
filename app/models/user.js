@@ -46,7 +46,7 @@ let userSchema = new Schema({
     default: false
   },
   profilePicture: {
-    type: string,
+    type: String,
     default: ''
   }
 

@@ -8,7 +8,8 @@ const check = require('../libs/checkLib')
 const passwordLib = require('./../libs/generatePasswordLib');
 const token = require('../libs/tokenLib')
 const callback = require('./../libs/controllerCallbackLib');
-
+const mailer = require('./../libs/nodeMailer');
+const issue_tracking_mail = require('./../../config/mailConfig')
 /* Models */
 
 const UserModel = mongoose.model('User')
@@ -64,6 +65,14 @@ let editUserName = (req, res) => {
 
 } // end edit user
 
+let editAcountactivation = (req, res) => {
+    UserModel.update({
+        'userId': req.params.userId
+    },{active: true}).exec((err, result) => {
+        callback.crudCallback(err, result, res, 'editAcountactivation')
+    })
+}
+
 // start user signup function 
 
 let signUpFunction = (req, res) => {
@@ -89,7 +98,7 @@ let signUpFunction = (req, res) => {
 
     let createUser = () => {
         UserModel.findOne({
-                email: req.body.email
+                'email': req.body.email
             })
             .exec((err, retrievedUserDetails) => {
                 if (err) {
@@ -118,6 +127,10 @@ let signUpFunction = (req, res) => {
                             return Promise.reject(apiResponse)
                         } else {
                             let newUserObj = newUser.toObject();
+                            let subject = 'To activate Issus acount'
+                            let text = 'Please click the link to activate the account'
+                            let html = `<p><a href='http://localhost:3000/api/v1/users/${newUserObj.userId}/verify'>Click here to activate your account</a></p>`
+                            mailer.messageSend(issue_tracking_mail.web.user,newUserObj.email,subject,text,html)
                             return Promise.resolve(newUserObj)
                         }
                     })
@@ -135,7 +148,7 @@ let signUpFunction = (req, res) => {
         .then(createUser)
         .then((resolve) => {
             delete resolve.password
-            let apiResponse = response.generate(false, 'User created', 200, resolve)
+            let apiResponse = response.generate(false, 'User created and go to the email to activate your account', 200, resolve)
             res.send(apiResponse)
         })
         .catch((err) => {
@@ -156,7 +169,7 @@ let loginFunction = (req, res) => {
             console.log("req body email is there");
             console.log(req.body);
             UserModel.findOne({
-                email: req.body.email
+                'email': req.body.email
             }, (err, userDetails) => {
                 if (err) {
                     console.log(err)
@@ -250,7 +263,7 @@ let loginFunction = (req, res) => {
     let saveToken = (tokenDetails) => {
         console.log('saving token details');
         authModel.findOne({
-            userId: tokenDetails.userId
+            'userId': tokenDetails.userId
         }, (err, retrievedTokenDetails) => {
             if (err) {
                 logger.error(err.message, 'internal server error: saveToken', 10)
@@ -347,10 +360,11 @@ module.exports = {
 
     signUpFunction: signUpFunction,
     getAllUser: getAllUser,
-    editUser: editUser,
+    editUserName: editUserName,
     deleteUser: deleteUser,
     getSingleUser: getSingleUser,
     loginFunction: loginFunction,
-    logout: logout
+    logout: logout,
+    editAcountactivation: editAcountactivation
 
 } // end exports

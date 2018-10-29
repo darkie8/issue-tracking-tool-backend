@@ -1,5 +1,6 @@
 const response = require('./../libs/responseLib')
 const logger = require('./../libs/loggerLib');
+const check = require('./checkLib')
 let loggererr = ''
 let msg = []
 let crudCallback = (err, result, res, function1) => {
@@ -11,12 +12,18 @@ let crudCallback = (err, result, res, function1) => {
         loggererr = 'allModerators'
         msg = ['Failed To get moderators details', 'No moderator Found', 'Moderator details found']
 
+    } else if (function1 == 'getSingleModerator') {
+        loggererr = 'getSingleModerators'
+        msg = ['Failed To get Moderator details', 'No Moderator Found', 'Moderator details found']
     } else if (function1 == 'getSingleUser') {
         loggererr = 'getSingleUser'
         msg = ['Failed To get user details', 'No User Found', 'User details found']
     } else if (function1 == 'deleteUser') {
         loggererr = 'deleteUser'
         msg = ['Failed To delete user', 'No User Found', 'User details deleted']
+    } else if (function1 == 'editAcountactivation') {
+        loggererr = 'editAcountactivation'
+        msg = ['Failed To verify User', 'No User Found', 'User details verified']
     } else if (function1 == 'editUser') {
         loggererr = 'editUser'
         msg = ['Failed To edit User', 'No User Found', 'User details edited']
