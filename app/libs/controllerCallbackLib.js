@@ -8,6 +8,10 @@ let crudCallback = (err, result, res, function1) => {
         loggererr = 'getAllUser'
         msg = ['Failed To get users details', 'No User Found', 'Users details found']
 
+    } else if (function1 == 'getAllIssues') {
+        loggererr = 'getAllIssues'
+        msg = ['Failed To get issue details', 'No issue Found', 'Issue details found']
+
     } else if (function1 == 'allModerators') {
         loggererr = 'allModerators'
         msg = ['Failed To get moderators details', 'No moderator Found', 'Moderator details found']
@@ -15,15 +19,24 @@ let crudCallback = (err, result, res, function1) => {
     } else if (function1 == 'getSingleModerator') {
         loggererr = 'getSingleModerators'
         msg = ['Failed To get Moderator details', 'No Moderator Found', 'Moderator details found']
+    } else if (function1 == 'getSingleIssue') {
+        loggererr = 'getSingleIssue'
+        msg = ['Failed To get issue details', 'No issue Found', 'Issue details found']
     } else if (function1 == 'getSingleUser') {
         loggererr = 'getSingleUser'
         msg = ['Failed To get user details', 'No User Found', 'User details found']
     } else if (function1 == 'deleteUser') {
         loggererr = 'deleteUser'
         msg = ['Failed To delete user', 'No User Found', 'User details deleted']
+    } else if (function1 == 'deleteIssue') {
+        loggererr = 'deleteIssue'
+        msg = ['Failed To delete issue', 'No issue Found', 'issue details deleted']
     } else if (function1 == 'editAcountactivation') {
         loggererr = 'editAcountactivation'
         msg = ['Failed To verify User', 'No User Found', 'User details verified']
+    } else if (function1 == 'editTitleandDescription') {
+        loggererr = 'editTitleandDescription'
+        msg = ['Failed To edit issue', 'No issue Found', 'issue details edited']
     } else if (function1 == 'editUser') {
         loggererr = 'editUser'
         msg = ['Failed To edit User', 'No User Found', 'User details edited']

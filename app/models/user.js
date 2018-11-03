@@ -37,10 +37,6 @@ let userSchema = new Schema({
     type: Date,
     default: ""
   },
-  issues: {
-    type: Array,
-    default: ['issue', 'issue1']
-  },
   active: {
     type: Boolean,
     default: false
@@ -53,4 +49,4 @@ let userSchema = new Schema({
 })
 
 
-mongoose.model('User', userSchema);
+mongoose.model('User_1', userSchema);

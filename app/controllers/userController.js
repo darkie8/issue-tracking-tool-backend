@@ -12,14 +12,14 @@ const mailer = require('./../libs/nodeMailer');
 const issue_tracking_mail = require('./../../config/mailConfig')
 /* Models */
 
-const UserModel = mongoose.model('User')
+const UserModel = mongoose.model('User_1')
 const authModel = mongoose.model('Auth')
-const IssueModel = mongoose.model('Issue')
+const IssueModel = mongoose.model('Issue_1')
 
 /* Get all user Details */
 let getAllUser = (req, res) => {
     UserModel.find()
-        .select(' -__v -_id')
+        .select(' -__v -_id -password')
         .lean()
         .exec((err, result) => {
             callback.crudCallback(err, result, res, 'getAllUser')
@@ -38,7 +38,18 @@ let getSingleUser = (req, res) => {
         })
 } // end get single user
 
-
+let getUserbyName = (req,res) => {
+    UserModel.find().or([{
+        'firstName': req.body,firstName,
+        'lastName': req.body.lastName
+    },{
+        'firstName': req.body,firstName
+    }]).select('-password -__v -_id')
+    .lean()
+    .exec((err, result) => {
+        callback.crudCallback(err, result, res, 'getSingleUser')
+    })
+}
 
 let deleteUser = (req, res) => {
 
@@ -118,7 +129,6 @@ let signUpFunction = (req, res) => {
                         password: passwordLib.hashpassword(req.body.password),
                         createdOn: time.now(),
                         modifiedOn: time.now(),
-                        issues: [],
                         active: false
                     })
                     newUser.save((err, newUser) => {
@@ -132,8 +142,11 @@ let signUpFunction = (req, res) => {
                             let subject = 'To activate Issus acount'
                             let text = 'Please click the link to activate the account'
                             let html = `<p><a href='http://localhost:3000/api/v1/users/${newUserObj.userId}/verify'>Click here to activate your account</a></p>`
-                            mailer.messageSend(issue_tracking_mail.web.user, newUserObj.email, subject, text, html)
-                            return resolve(newUserObj)
+                         let know =  mailer.messageSend(issue_tracking_mail.web.user, newUserObj.email, subject, text, html)
+                           if(!know){ return resolve(newUserObj)} else {
+                            let apiResponse = response.generate(true, 'Failed to create new User', 500, null)
+                            return reject(apiResponse)
+                           }
                         }
                     })
                 } else {
@@ -370,6 +383,7 @@ module.exports = {
 
     signUpFunction: signUpFunction,
     getAllUser: getAllUser,
+    getUserbyName: getUserbyName,
     editUserName: editUserName,
     deleteUser: deleteUser,
     getSingleUser: getSingleUser,

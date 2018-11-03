@@ -42,7 +42,9 @@ const oauth2Client = new OAuth2(
     // send mail with defined transport object
     transporter.sendMail(mailOptions, (error, response) => {
         error ? console.log(error) : console.log(response);
+    
         transporter.close();
+        
    });
   
 };

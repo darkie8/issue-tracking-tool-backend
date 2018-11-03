@@ -16,16 +16,46 @@ let issueSchema = new Schema({
     type: String,
     default: 'in-progress'
   },
-  Reporter: {
+  description: {
+    type: String
+  },
+  reporter: {
     type: String,
     default: 'darkie8'
+  },
+  assigned_personel: {
+    type: Array,
+    default: []
+  },
+  watcher: {
+    type: Array,
+    default: []
   },
   createdOn :{
     type:Date,
     default:""
+  },
+  modifiedOn: {
+    type:Date,
+    default:""
+  },
+  files: {
+    type: String,
+  },
+  comments: {
+    type: Array,
+    default: []
+  },
+  like: {
+    type: Number,
+    default: 0
+  },
+  dislike: {
+    type: Number,
+    default: 0
   }
 
 })
 
 
-mongoose.model('Issue', issueSchema);
+mongoose.model('Issue_1', issueSchema);
