@@ -40,7 +40,8 @@ let issueSchema = new Schema({
     default:""
   },
   files: {
-    type: String,
+    type: Array,
+    default: []
   },
   comments: {
     type: Array,
@@ -58,4 +59,4 @@ let issueSchema = new Schema({
 })
 
 
-mongoose.model('Issue_1', issueSchema);
+mongoose.model('Issue_2', issueSchema);

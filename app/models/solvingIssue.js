@@ -25,7 +25,8 @@ const mongoose = require('mongoose')
       default:""
     },
     files: {
-      type: String,
+      type: Array,
+      default: []
     },
     comments: {
       type: Array,
@@ -35,4 +36,4 @@ const mongoose = require('mongoose')
   })
   
   
-  mongoose.model('solvingIssue', solvingIssue);
+  mongoose.model('solvingIssue_1', solvingIssue);

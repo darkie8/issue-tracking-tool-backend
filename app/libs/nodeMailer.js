@@ -1,4 +1,6 @@
 const nodemailer = require('nodemailer');
+var events = require('events');
+var em = new events.EventEmitter();
 const issue_tracking_mail = require('./../../config/mailConfig')
 const {
     google
@@ -41,15 +43,16 @@ const oauth2Client = new OAuth2(
 
     // send mail with defined transport object
     transporter.sendMail(mailOptions, (error, response) => {
-        error ? console.log(error) : console.log(response);
+        error ?  em.emit('mailsend', false) :  em.emit('mailsend', true);;
     
         transporter.close();
-        
+       
    });
   
 };
 
 
 module.exports = {
-    messageSend: messageSend
+    messageSend: messageSend,
+    em: em
 }

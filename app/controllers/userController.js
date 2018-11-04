@@ -14,7 +14,7 @@ const issue_tracking_mail = require('./../../config/mailConfig')
 
 const UserModel = mongoose.model('User_1')
 const authModel = mongoose.model('Auth')
-const IssueModel = mongoose.model('Issue_1')
+const IssueModel = mongoose.model('Issue_2')
 
 /* Get all user Details */
 let getAllUser = (req, res) => {
@@ -38,17 +38,19 @@ let getSingleUser = (req, res) => {
         })
 } // end get single user
 
-let getUserbyName = (req,res) => {
+let getUserbyName = (req, res) => {
     UserModel.find().or([{
-        'firstName': req.body,firstName,
-        'lastName': req.body.lastName
-    },{
-        'firstName': req.body,firstName
-    }]).select('-password -__v -_id')
-    .lean()
-    .exec((err, result) => {
-        callback.crudCallback(err, result, res, 'getSingleUser')
-    })
+            'firstName': req.body,
+            firstName,
+            'lastName': req.body.lastName
+        }, {
+            'firstName': req.body,
+            firstName
+        }]).select('-password -__v -_id')
+        .lean()
+        .exec((err, result) => {
+            callback.crudCallback(err, result, res, 'getSingleUser')
+        })
 }
 
 let deleteUser = (req, res) => {
@@ -67,17 +69,17 @@ let editUserName = (req, res) => {
         firstName: req.body.firstName,
         lastName: req.body.lastName || ''
     };
-    UserModel.update({
+    UserModel.updateOne({
         'userId': req.params.userId
     }, options).exec((err, result) => {
         callback.crudCallback(err, result, res, 'editUser')
-    }); // end user model update
+    }); // end user model updateOne
 
 
 } // end edit user
 
 let editAcountactivation = (req, res) => {
-    UserModel.update({
+    UserModel.updateOne({
         'userId': req.params.userId
     }, {
         active: true
@@ -91,70 +93,89 @@ let editAcountactivation = (req, res) => {
 let signUpFunction = (req, res) => {
 
     let validateUserInput = () => {
-        return new Promise((resolve, reject) => {if (req.body.email) {
-            if (!validateInput.Email(req.body.email)) {
-                let apiResponse = response.generate(true, 'Email Does not meet the requirement', 400, null)
-                return reject(apiResponse)
-            } else if (check.isEmpty(req.body.password)) {
-                let apiResponse = response.generate(true, '"password" parameter is missing"', 400, null)
-                return reject(apiResponse)
+        return new Promise((resolve, reject) => {
+            if (req.body.email) {
+                if (!validateInput.Email(req.body.email)) {
+                    let apiResponse = response.generate(true, 'Email Does not meet the requirement', 400, null)
+                    return reject(apiResponse)
+                } else if (check.isEmpty(req.body.password)) {
+                    let apiResponse = response.generate(true, '"password" parameter is missing"', 400, null)
+                    return reject(apiResponse)
+                } else {
+                    return resolve(req)
+                }
             } else {
-                return resolve(req)
+                logger.error('Field Missing During User Creation', 'userController: createUser()', 5)
+                let apiResponse = response.generate(true, 'One or More Parameter(s) is missing', 400, null)
+                return reject(apiResponse)
             }
-        } else {
-            logger.error('Field Missing During User Creation', 'userController: createUser()', 5)
-            let apiResponse = response.generate(true, 'One or More Parameter(s) is missing', 400, null)
-            return reject(apiResponse)
-        }})
+        })
 
     } // end validate user input
 
     let createUser = () => {
-        return new Promise((resolve, reject) => { UserModel.findOne({
-                'email': req.body.email
-            })
-            .exec((err, retrievedUserDetails) => {
-                if (err) {
-                    logger.error(err.message, 'userController: createUser', 10)
-                    let apiResponse = response.generate(true, 'Failed To Create User', 500, null)
-                    return reject(apiResponse)
-                } else if (check.isEmpty(retrievedUserDetails)) {
-                    console.log(req.body)
-                    let newUser = new UserModel({
-                        userId: shortid.generate(),
-                        firstName: req.body.firstName,
-                        lastName: req.body.lastName || '',
-                        email: req.body.email.toLowerCase(),
-                        mobileNumber: req.body.mobileNumber,
-                        password: passwordLib.hashpassword(req.body.password),
-                        createdOn: time.now(),
-                        modifiedOn: time.now(),
-                        active: false
-                    })
-                    newUser.save((err, newUser) => {
-                        if (err) {
-                            console.log(err)
-                            logger.error(err.message, 'userController: createUser', 10)
-                            let apiResponse = response.generate(true, 'Failed to create new User', 500, null)
-                            return reject(apiResponse)
-                        } else {
-                            let newUserObj = newUser.toObject();
-                            let subject = 'To activate Issus acount'
-                            let text = 'Please click the link to activate the account'
-                            let html = `<p><a href='http://localhost:3000/api/v1/users/${newUserObj.userId}/verify'>Click here to activate your account</a></p>`
-                         let know =  mailer.messageSend(issue_tracking_mail.web.user, newUserObj.email, subject, text, html)
-                           if(!know){ return resolve(newUserObj)} else {
-                            let apiResponse = response.generate(true, 'Failed to create new User', 500, null)
-                            return reject(apiResponse)
-                           }
-                        }
-                    })
-                } else {
-                    logger.error('User Cannot Be Created.User Already Present', 'userController: createUser', 4)
-                    let apiResponse = response.generate(true, 'User Already Present With this Email', 403, null)
-                    return reject(apiResponse)
-                }
-            })})
+        return new Promise((resolve, reject) => {
+            UserModel.findOne({
+                    'email': req.body.email
+                })
+                .exec((err, retrievedUserDetails) => {
+                    if (err) {
+                        logger.error(err.message, 'userController: createUser', 10)
+                        let apiResponse = response.generate(true, 'Failed To Create User', 500, null)
+                        return reject(apiResponse)
+                    } else if (check.isEmpty(retrievedUserDetails)) {
+                        console.log(req.body)
+                        let newUser = new UserModel({
+                            userId: shortid.generate(),
+                            firstName: req.body.firstName,
+                            lastName: req.body.lastName || '',
+                            email: req.body.email.toLowerCase(),
+                            mobileNumber: req.body.mobileNumber,
+                            password: passwordLib.hashpassword(req.body.password),
+                            createdOn: time.now(),
+                            modifiedOn: time.now(),
+                            active: false
+                        })
+                        
+                        newUser.save((err, newUser) => {
+                            if (err) {
+                                console.log(err)
+                                logger.error(err.message, 'userController: createUser', 10)
+                                let apiResponse = response.generate(true, 'Failed to create new User', 500, null)
+                                return reject(apiResponse)
+                            } else {
+                                let newUserObj = newUser.toObject();
+                                let subject = 'To activate Issus acount'
+                                let text = 'Please click the link to activate the account'
+                                let html = `<p><a href='http://localhost:4200/${newUserObj.userId}/verify'>Click here to activate your account</a></p>`
+                                mailer.messageSend(issue_tracking_mail.web.user, newUserObj.email, subject, text, html)
+                                mailer.em.on('mailsend', (data) => {
+                                    
+                                    if (data) {
+                                        console.log(data);
+                                        return resolve(newUserObj)
+                                       
+                                    } else {
+                                        console.log(data);
+                                        newUser.deleteOne({email: req.body.email.toLowerCase()},(err)=>{
+                                            let apiResponse = response.generate(true, 'Failed to create new User', 500, null)
+                                        return reject(apiResponse)
+                                        })
+                                        
+                                    }
+                                 
+                                }
+                                )
+                            }
+                                
+                        })
+                    } else {
+                        logger.error('User Cannot Be Created.User Already Present', 'userController: createUser', 4)
+                        let apiResponse = response.generate(true, 'User Already Present With this Email', 403, null)
+                        return reject(apiResponse)
+                    }
+                })
+        })
 
     } // end create user function
 
@@ -267,17 +288,19 @@ let loginFunction = (req, res) => {
 
     let generateToken = (userDetails) => {
         console.log("generate token");
-        return new Promise((resolve, reject) => {token.generateToken(userDetails, (err, tokenDetails) => {
-            if (err) {
-                console.log(err)
-                let apiResponse = response.generate(true, 'Failed To Generate Token', 500, null)
-                return reject(apiResponse)
-            } else {
-                tokenDetails.userId = userDetails.userId
-                tokenDetails.userDetails = userDetails
-                return resolve(tokenDetails)
-            }
-        })})
+        return new Promise((resolve, reject) => {
+            token.generateToken(userDetails, (err, tokenDetails) => {
+                if (err) {
+                    console.log(err)
+                    let apiResponse = response.generate(true, 'Failed To Generate Token', 500, null)
+                    return reject(apiResponse)
+                } else {
+                    tokenDetails.userId = userDetails.userId
+                    tokenDetails.userDetails = userDetails
+                    return resolve(tokenDetails)
+                }
+            })
+        })
 
     }
 
@@ -285,54 +308,56 @@ let loginFunction = (req, res) => {
 
     let saveToken = (tokenDetails) => {
         console.log('saving token details');
-        return new Promise((resolve, reject) => { authModel.findOne({
-            'userId': tokenDetails.userId
-        }, (err, retrievedTokenDetails) => {
-            if (err) {
-                logger.error(err.message, 'internal server error: saveToken', 10)
-                return reject(response.generate(true, 'failed to generate Token', 500, null))
-            } else if (check.isEmpty(retrievedTokenDetails)) {
-                let authToken = new authModel({
-                    userId: tokenDetails.userId,
-                    authToken: tokenDetails.token,
-                    tokenSecret: tokenDetails.tokenSecret,
-                    tokenGenerationTime: time.now()
-                })
+        return new Promise((resolve, reject) => {
+            authModel.findOne({
+                'userId': tokenDetails.userId
+            }, (err, retrievedTokenDetails) => {
+                if (err) {
+                    logger.error(err.message, 'internal server error: saveToken', 10)
+                    return reject(response.generate(true, 'failed to generate Token', 500, null))
+                } else if (check.isEmpty(retrievedTokenDetails)) {
+                    let authToken = new authModel({
+                        userId: tokenDetails.userId,
+                        authToken: tokenDetails.token,
+                        tokenSecret: tokenDetails.tokenSecret,
+                        tokenGenerationTime: time.now()
+                    })
 
-                authToken.save((err, newTokenDetails) => {
-                    if (err) {
-                        logger.error(true, 'userControl: saveToken', 10)
-                        return reject(response.generate(true, 'failed to generate Token', 500, null))
-                    } else {
-                        let responseBody = {
-                            authToken: newTokenDetails.authToken,
-                            userDetails: tokenDetails.userDetails
+                    authToken.save((err, newTokenDetails) => {
+                        if (err) {
+                            logger.error(true, 'userControl: saveToken', 10)
+                            return reject(response.generate(true, 'failed to generate Token', 500, null))
+                        } else {
+                            let responseBody = {
+                                authToken: newTokenDetails.authToken,
+                                userDetails: tokenDetails.userDetails
+                            }
+                            return resolve(responseBody)
+
                         }
-                        return resolve(responseBody)
+                    })
 
-                    }
-                })
-
-            } else {
-                retrievedTokenDetails.authToken = tokenDetails.token
-                retrievedTokenDetails.tokenSecret = tokenDetails.tokenSecret
-                retrievedTokenDetails.tokenGenerationTime = time.now()
-                retrievedTokenDetails.save((err, newTokenDetails) => {
-                    if (err) {
-                        console.log(err)
-                        logger.error(err.message, 'userController: saveToken', 10)
-                        let apiResponse = response.generate(true, 'Failed To Generate Token', 500, null)
-                        return reject(apiResponse)
-                    } else {
-                        let responseBody = {
-                            authToken: newTokenDetails.authToken,
-                            userDetails: tokenDetails.userDetails
+                } else {
+                    retrievedTokenDetails.authToken = tokenDetails.token
+                    retrievedTokenDetails.tokenSecret = tokenDetails.tokenSecret
+                    retrievedTokenDetails.tokenGenerationTime = time.now()
+                    retrievedTokenDetails.save((err, newTokenDetails) => {
+                        if (err) {
+                            console.log(err)
+                            logger.error(err.message, 'userController: saveToken', 10)
+                            let apiResponse = response.generate(true, 'Failed To Generate Token', 500, null)
+                            return reject(apiResponse)
+                        } else {
+                            let responseBody = {
+                                authToken: newTokenDetails.authToken,
+                                userDetails: tokenDetails.userDetails
+                            }
+                            return resolve(responseBody)
                         }
-                        return resolve(responseBody)
-                    }
-                })
-            }
-        })})
+                    })
+                }
+            })
+        })
     }
 
     // execute the functions

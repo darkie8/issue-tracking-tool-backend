@@ -7,7 +7,7 @@ const callback = require('./../libs/controllerCallbackLib');
 
 // models
 const UserModel = mongoose.model('User_1')
-const IssueModel = mongoose.model('Issue_1')
+const IssueModel = mongoose.model('Issue_2')
 
 let getAllIssues = (req, res) => {
     IssueModel.find()
@@ -19,7 +19,7 @@ let getAllIssues = (req, res) => {
 } // end get all issues
 
 let getAllIssuesPaginate = (req, res) => {
-    let paginatingTime = req.body.paginatingTime
+    let paginatingTime =new Number(req.params.paginatingTime)
 
     IssueModel.find().skip(paginatingTime).limit(10)
         .select(' -__v -_id')
@@ -62,7 +62,7 @@ let createIssue = (req, res) => {
         description: req.body.description,
         reporter: req.body.reporter,
         createdOn: time.now(),
-        modifiedOne: time.now(),
+        modifiedOn: time.now(),
         file: ""
     })
 
@@ -111,13 +111,11 @@ let editDescription = (req, res) => {
 } // end editTitle
 
 let addAssignee = (req, res) => {
-    let push = { '$and': [{
-        '$push': {
-            "assigned_personel": req.body.assigneeId
-        }
-    },{
-        '$set': {modifiedOn: time.now()}
-    }]}
+    let push = {'modifiedOn': time.now(),
+    '$push': {
+        "assigned_personel": req.body.assigneeId
+    }
+}
     IssueModel.findOneAndUpdate({
         'issueId': req.params.issueId
     }, push).exec((err, result) => {
@@ -127,13 +125,12 @@ let addAssignee = (req, res) => {
 } // end  addAssignee
 
 let deleteAssignee = (req, res) => {
-    let pull = { '$and' :[{
+    let pull = {
+        modifiedOn: time.now(),
         '$pull': {
             "assigned_personel": req.body.assigneeId
         }
-    },{
-        '$set': {modifiedOn: time.now()}
-    }]}
+    }
     IssueModel.findOneAndUpdate({
         'issueId': req.params.issueId
     }, pull).exec((err, result) => {
@@ -141,12 +138,11 @@ let deleteAssignee = (req, res) => {
     })
 } // delete  addAssignee
 let addWatcher = (req, res) => {
-    let push = { '$and' :[{
+    let push = { modifiedOn: time.now(),
         '$push': {
-            "watcher": req.body.assigneeId
-        }},{
-            '$set': {modifiedOn: time.now()}
-        }]}
+            "watcher": req.body.watcherId
+        }
+    }
     
     IssueModel.findOneAndUpdate({
         'issueId': req.params.issueId
@@ -156,13 +152,11 @@ let addWatcher = (req, res) => {
 
 } // end  addWatcher 
 let deleteWatcher = (req, res) => {
-    let pull = { '$and' :[{
+    let pull = { modifiedOn: time.now(),
         '$pull': {
-            "watcher": req.body.assigneeId
+            "watcher": req.body.watcherId
         }
-    },{
-        '$set': {modifiedOn: time.now()}
-    }]}
+    }
     IssueModel.findOneAndUpdate({
         'issueId': req.params.issueId
     }, pull).exec((err, result) => {
@@ -171,13 +165,11 @@ let deleteWatcher = (req, res) => {
 } // delete  addAssignee
 
 let addlike = (req, res) => {
-    let increase = { '$and': [{
+    let increase = { modifiedOn: time.now(),
         '$inc': {
             "like": 1
         }
-    },{
-        '$set': {modifiedOn: time.now()}
-    }]}
+    }
     IssueModel.findOneAndUpdate({
         'issueId': req.params.issueId
     }, increase).exec((err, result) => {
@@ -186,13 +178,11 @@ let addlike = (req, res) => {
 
 } // end  addlike 
 let deletelike = (req, res) => {
-    let decrease = { '$and':[{
+    let decrease = { modifiedOn: time.now(),
         '$inc': {
             "like": -1
         }
-    },{
-        '$set': {modifiedOn: time.now()}
-    }]}
+    }
     IssueModel.findOneAndUpdate({
         'issueId': req.params.issueId
     }, decrease).exec((err, result) => {
@@ -202,13 +192,11 @@ let deletelike = (req, res) => {
 } // end  deletelike
 
 let adddislike = (req, res) => {
-    let increase = { '$and':[{
+    let increase = { modifiedOn: time.now(),
         '$inc': {
             "dislike": 1
         }
-    },{
-        '$set': {modifiedOn: time.now()}
-    }]}
+    }
     IssueModel.findOneAndUpdate({
         'issueId': req.params.issueId
     }, increase).exec((err, result) => {
@@ -217,13 +205,11 @@ let adddislike = (req, res) => {
 
 } // end  addlike 
 let deletedislike = (req, res) => {
-    let decrease = { '$and': [{
+    let decrease = { modifiedOn: time.now(),
         '$inc': {
             "dislike": -1
         }
-    },{
-        '$set': {modifiedOn: time.now()}
-    }]}
+    }
     IssueModel.findOneAndUpdate({
         'issueId': req.params.issueId
     }, decrease).exec((err, result) => {

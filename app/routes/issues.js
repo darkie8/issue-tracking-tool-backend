@@ -11,7 +11,7 @@ module.exports.setRouter = (app) => {
     let baseUrl = `${appConfig.apiVersion}/issue`;
     app.get(`${baseUrl}/allissues`, auth.isAuthenticated, issueController.getAllIssues)
     app.get(`${baseUrl}/:issueId`,auth.isAuthenticated, issueController.getSingleIssue)
-    app.get(`${baseUrl}/paginateIssues`,auth.isAuthenticated, issueController.getAllIssuesPaginate)
+    app.get(`${baseUrl}/paginateIssues/:paginatingTime`,auth.isAuthenticated, issueController.getAllIssuesPaginate)
     app.post(`${baseUrl}/createIssue`, issueController.createIssue);
     app.post(`${baseUrl}/:issueId/addAssignee`,auth.isAuthenticated, issueController.addAssignee);
     app.post(`${baseUrl}/:issueId/deleteAssignee`,auth.isAuthenticated, issueController.deleteAssignee);
