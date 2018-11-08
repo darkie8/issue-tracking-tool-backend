@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const app = express();
 const http = require('http');
+const https = require('https');
 const appConfig = require('./config/appConfig');
 const logger = require('./app/libs/loggerLib');
 const routeLoggerMiddleware = require('./app/middlewares/routeLogger.js');
@@ -56,8 +57,12 @@ app.use(globalErrorMiddleware.globalNotFoundHandler);
 /**
  * Create HTTP server.
  */
-
-const server = http.createServer(app);
+const options = {
+  hostname: "localhost",
+  key: fs.readFileSync('./certificate/localhost.key'),
+  cert: fs.readFileSync("./certificate/localhost.crt")
+ };
+const server = https.createServer(options,app);
 
 // start listening to http server
 console.log(appConfig);

@@ -147,7 +147,7 @@ let signUpFunction = (req, res) => {
                                 let newUserObj = newUser.toObject();
                                 let subject = 'To activate Issus acount'
                                 let text = 'Please click the link to activate the account'
-                                let html = `<p><a href='http://localhost:4200/${newUserObj.userId}/verify'>Click here to activate your account</a></p>`
+                                let html = `<p><a href='http://localhost:4200/#/verify/${newUserObj.userId}'>Click here to activate your account</a></p>`
                                 mailer.messageSend(issue_tracking_mail.web.user, newUserObj.email, subject, text, html)
                                 mailer.em.on('mailsend', (data) => {
                                     
@@ -381,6 +381,9 @@ let loginFunction = (req, res) => {
 
 }
 
+let fb_auth_login= (req, res) => {
+    console.log(req.user)
+}
 
 // end of the login function 
 
@@ -414,6 +417,7 @@ module.exports = {
     getSingleUser: getSingleUser,
     loginFunction: loginFunction,
     logout: logout,
-    editAcountactivation: editAcountactivation
+    editAcountactivation: editAcountactivation,
+    fb_auth_login: fb_auth_login
 
 } // end exports
