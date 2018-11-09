@@ -4,7 +4,7 @@ const userController = require("./../../app/controllers/userController");
 const uploadcontroller = require('./../controllers/uploadingfilecontroller')
 const appConfig = require("./../../config/appConfig")
 const auth = require('./../middlewares/auth')
-// const fb_oauth = require('./../middlewares/facebookOauth')
+const fb_oauth = require('./../middlewares/facebookOauth')
 module.exports.setRouter = (app) => {
 
     let baseUrl = `${appConfig.apiVersion}/users`;
@@ -16,10 +16,8 @@ module.exports.setRouter = (app) => {
     app.put(`${baseUrl}/:userId/verify`, userController.editAcountactivation);
     app.post(`${baseUrl}/:userId/delete`, userController.deleteUser);
     app.post(`${baseUrl}/logout`, auth.isAuthenticated, userController.logout);
-    app.get(`${baseUrl}/auth/facebook/callback`, userController.fb_auth_login)
-    app.get(`${baseUrl}/test`,(req,res)=> {
-        res.send('helo world')
-    })
+    app.get(`${baseUrl}/auth/facebook`, fb_oauth.fbauth,(req,res)=>{})
+    app.get(`${baseUrl}/auth/facebook/callback`, fb_oauth.fbauth_callback, userController.fb_auth_login)
     
 
 }

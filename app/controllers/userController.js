@@ -382,7 +382,9 @@ let loginFunction = (req, res) => {
 }
 
 let fb_auth_login= (req, res) => {
-    console.log(req.user)
+
+    console.log(res.total)
+    res.redirect('http://localhost:4200/#/login')
 }
 
 // end of the login function 

@@ -23,9 +23,6 @@ app.use(cookieParser());
 app.use(globalErrorMiddleware.globalErrorHandler);
 
 const modelsPath = './app/models';
-const controllersPath = './app/controllers';
-const libsPath = './app/libs';
-const middlewaresPath = './app/middlewares';
 const routesPath = './app/routes';
 
 // Access-Control 
