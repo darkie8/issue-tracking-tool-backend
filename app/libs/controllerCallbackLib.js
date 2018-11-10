@@ -3,7 +3,7 @@ const logger = require('./../libs/loggerLib');
 const check = require('./checkLib')
 let loggererr = ''
 let msg = []
-let crudCallback = (err, result, res, function1) => {
+let crudCallback =  (err, result, res, function1) => {
     if (function1 == 'getAllUser') {
         loggererr = 'getAllUser'
         msg = ['Failed To get users details', 'No User Found', 'Users details found']

@@ -8,8 +8,8 @@ const fb_oauth = require('./../middlewares/facebookOauth')
 module.exports.setRouter = (app) => {
 
     let baseUrl = `${appConfig.apiVersion}/users`;
-    app.get(`${baseUrl}/all`, auth.isAuthenticated, userController.getAllUser)
-    app.get(`${baseUrl}/:userId`,auth.isAuthenticated, userController.getSingleUser)
+    app.get(`${baseUrl}/all`, userController.getAllUser)
+    app.get(`${baseUrl}/:userId/singleUser`,auth.isAuthenticated, userController.getSingleUser)
     app.get(`${baseUrl}/singleUser`,auth.isAuthenticated, userController.getUserbyName)
     app.post(`${baseUrl}/signup`, userController.signUpFunction);
     app.post(`${baseUrl}/login`, userController.loginFunction);
@@ -17,7 +17,8 @@ module.exports.setRouter = (app) => {
     app.post(`${baseUrl}/:userId/delete`, userController.deleteUser);
     app.post(`${baseUrl}/logout`, auth.isAuthenticated, userController.logout);
     app.get(`${baseUrl}/auth/facebook`, fb_oauth.fbauth,(req,res)=>{})
-    app.get(`${baseUrl}/auth/facebook/callback`, fb_oauth.fbauth_callback, userController.fb_auth_login)
+    app.get(`${baseUrl}/auth/facebook/callback`, fb_oauth.fbauth_callback, userController.fb_auth_login),
+    app.get(`${baseUrl}/allauth`, userController.all_fb_auth_models)
     
 
 }

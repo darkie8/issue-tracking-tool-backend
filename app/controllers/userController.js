@@ -19,7 +19,7 @@ const IssueModel = mongoose.model('Issue_2')
 /* Get all user Details */
 let getAllUser = (req, res) => {
     UserModel.find()
-        .select(' -__v -_id -password')
+        .select(' -__v -_id ')
         .lean()
         .exec((err, result) => {
             callback.crudCallback(err, result, res, 'getAllUser')
@@ -317,7 +317,7 @@ let loginFunction = (req, res) => {
                     return reject(response.generate(true, 'failed to generate Token', 500, null))
                 } else if (check.isEmpty(retrievedTokenDetails)) {
                     let authToken = new authModel({
-                        userId: tokenDetails.userId,
+                        userId: tokenDetails.userId ,
                         authToken: tokenDetails.token,
                         tokenSecret: tokenDetails.tokenSecret,
                         tokenGenerationTime: time.now()
@@ -380,7 +380,14 @@ let loginFunction = (req, res) => {
         })
 
 }
-
+let all_fb_auth_models = (req, res) => {
+authModel.find()
+.select(' -__v -_id ')
+.lean()
+.exec((err, result) => {
+    callback.crudCallback(err, result, res, 'getAllUser')
+})
+}
 let fb_auth_login= (req, res) => {
 
     console.log(res.total)
@@ -420,6 +427,7 @@ module.exports = {
     loginFunction: loginFunction,
     logout: logout,
     editAcountactivation: editAcountactivation,
-    fb_auth_login: fb_auth_login
+    fb_auth_login: fb_auth_login,
+    all_fb_auth_models: all_fb_auth_models
 
 } // end exports
