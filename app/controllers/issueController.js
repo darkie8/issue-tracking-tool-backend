@@ -4,7 +4,7 @@ const time = require('./../libs/timeLib');
 const response = require('./../libs/responseLib')
 const logger = require('./../libs/loggerLib');
 const callback = require('./../libs/controllerCallbackLib');
-
+const check = require('../libs/checkLib');
 // models
 const UserModel = mongoose.model('User_1')
 const IssueModel = mongoose.model('Issue_2')
@@ -39,6 +39,58 @@ let getSingleIssue = (req, res) => {
             callback.crudCallback(err, result, res, 'getSingleIssue')
         })
 } // end getSingleIssue
+
+ // get Issues Assigned By a Certain User
+let getIssuesAssignedByaCertainUser = ( req,res) => {
+    IssueModel.find({reporter: req.body.userId})
+    .select('-__v -_id')
+    .lean()
+    .exec((err, result) => {
+        if (err) {
+            console.log(err)
+            logger.error('Failed To get Issue details', `User Controller: getIssuesAssignedByaCertainUser`, 10)
+            
+            let apiResponse = response.generate(true, 'Failed To get Issue details', 500, {'issues': null, '_length': 0})
+            res.send(apiResponse)
+        } else if (check.isEmpty(result)) {
+            logger.error('Issue details found', `User Controller: getIssuesAssignedByaCertainUser`, 8)
+            let apiResponse = response.generate(true,'No issue Found', 404, {'issues': null, '_length': 0})
+            res.send(apiResponse)
+    
+        } else {
+            let total_issues = result.length
+            logger.info('Issue details found', `User Controller: getIssuesAssignedByaCertainUser`, 1)
+            let apiResponse = response.generate(false, 'Issue details found', 200, {'issues': result, '_length': total_issues})
+            res.send(apiResponse)
+        }
+    })
+}// end getIssuesAssignedByaCertainUser
+
+// get Issues Assigned to a Certain User
+let getIssuesAssignedToaCertainUser = ( req,res) => {
+    IssueModel.find({assigned_personel: [req.body.userId]})
+    .select('-__v -_id')
+    .lean()
+    .exec((err, result) => {
+        if (err) {
+            console.log(err)
+            logger.error('Failed To get Issue details', `User Controller: getIssuesAssignedByaCertainUser`, 10)
+            
+            let apiResponse = response.generate(true, 'Failed To get Issue details', 500, null)
+            res.send(apiResponse)
+        } else if (check.isEmpty(result)) {
+            logger.error('Issue details found', `User Controller: getIssuesAssignedByaCertainUser`, 8)
+            let apiResponse = response.generate(true,'No issue Found', 404, null)
+            res.send(apiResponse)
+    
+        } else {
+            let total_issues = result.length
+            logger.info('Issue details found', `User Controller: getIssuesAssignedByaCertainUser`, 1)
+            let apiResponse = response.generate(false, 'Issue details found', 200, {'issues': result, '_length': total_issues})
+            res.send(apiResponse)
+        }
+    })
+}// end getIssuesAssignedToaCertainUser
 
 
 let deleteIssue = (req, res) => {
@@ -232,5 +284,7 @@ module.exports = {
     addlike: addlike,
     deletelike: deletelike,
     adddislike: adddislike,
-    deletedislike: deletedislike
+    deletedislike: deletedislike,
+    getIssuesAssignedByaCertainUser: getIssuesAssignedByaCertainUser,
+    getIssuesAssignedToaCertainUser: getIssuesAssignedToaCertainUser
 }

@@ -3,7 +3,7 @@ const logger = require('./../libs/loggerLib');
 const check = require('./checkLib')
 let loggererr = ''
 let msg = []
-let crudCallback =  (err, result, res, function1) => {
+let crudCallback = (err, result, res, function1) => {
     if (function1 == 'getAllUser') {
         loggererr = 'getAllUser'
         msg = ['Failed To get users details', 'No User Found', 'Users details found']
@@ -15,6 +15,10 @@ let crudCallback =  (err, result, res, function1) => {
     } else if (function1 == 'allModerators') {
         loggererr = 'allModerators'
         msg = ['Failed To get moderators details', 'No moderator Found', 'Moderator details found']
+
+    } else if (function1 == 'getIssuesAssignedByaCertainUser') {
+        loggererr = 'getIssuesAssignedByaCertainUser'
+        msg = ['Failed To get Issue details', 'No Issues Found', `Issues' details found`]
 
     } else if (function1 == 'getSingleModerator') {
         loggererr = 'getSingleModerators'
