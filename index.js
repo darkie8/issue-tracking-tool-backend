@@ -55,9 +55,9 @@ app.use(globalErrorMiddleware.globalNotFoundHandler);
  * Create HTTP server.
  */
 const options = {
-  hostname: "localhost",
-  key: fs.readFileSync('./certificate/localhost.key'),
-  cert: fs.readFileSync("./certificate/localhost.crt")
+  hostname: "localhoststarboy",
+  key: fs.readFileSync('./certificate/localhoststarboy.key'),
+  cert: fs.readFileSync('./certificate/localhoststarboy.crt')
  };
 const server = https.createServer(options,app);
 

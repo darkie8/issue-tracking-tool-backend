@@ -1,0 +1,17 @@
+> openssl genrsa -des3 -out rootCA.key 2048
+> openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.pem
+//
+Step 1: Click Start > Run
+Step 2: Enter MMC to open Microsoft Management Console.
+Step3: Go to File > Add/Remove Snap-in
+Step 4: Click Certificates, and select Add
+Step 5: Select Computer Account, and click Next
+Step 6: Select Local Computer and click Finish
+Step 7: Click OK to go back to main MMC console window.
+Step 8:Double-click Certificates (local computer) to expand its view.
+Step 9:Right-click Certificates under Trusted Root Certification Authorities and select All Tasks then Import
+Step 10:Complete the wizard to import the chain certificate. Browse to locate the chain certificate to be imported or rootCA.pem file to import
+Step 11: Select Place all certificates in the following store and select the Trusted Root Certification Authorities store.Click Next; then click Finish to complete the wizard.
+//
+> openssl req -new -sha256 -nodes -out localhoststarboy.csr -newkey rsa:2048 -keyout localhoststarboy.key -subj "//C=IN\ST=WB\L=KOLKATA\O=libtrue_Inc\OU=web-dev\CN=darkie9\emailAddress=sdarkie9@gmail.com"
+> openssl x509 -req -in localhoststarboy.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out localhoststarboy.crt -days 500 -sha256 -extfile v3.ext
