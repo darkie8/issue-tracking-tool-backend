@@ -10,6 +10,7 @@ var storing = multer.diskStorage({
             fse.ensureDir(dirPath,err => {
                console.log('cant create directory')
            })
+           req.dirPath = dirPath
             cb(null, dirPath);
         }
         catch(e){

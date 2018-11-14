@@ -5,6 +5,7 @@ const response = require('./../libs/responseLib')
 const logger = require('./../libs/loggerLib');
 const callback = require('./../libs/controllerCallbackLib');
 const check = require('../libs/checkLib');
+const fse = require('fs-extra');
 // models
 const UserModel = mongoose.model('User_1')
 const IssueModel = mongoose.model('Issue_4')
@@ -19,7 +20,7 @@ let getAllIssues = (req, res) => {
 } // end get all issues
 
 let getAllIssuesPaginate = (req, res) => {
-    let paginatingTime =new Number(req.params.paginatingTime)
+    let paginatingTime = new Number(req.params.paginatingTime)
 
     IssueModel.find().skip(paginatingTime).limit(10)
         .select(' -__v -_id')
@@ -40,57 +41,73 @@ let getSingleIssue = (req, res) => {
         })
 } // end getSingleIssue
 
- // get Issues Assigned By a Certain User
-let getIssuesAssignedByaCertainUser = ( req,res) => {
-    IssueModel.find({reporter: req.body.userId})
-    .select('-__v -_id')
-    .lean()
-    .exec((err, result) => {
-        if (err) {
-            console.log(err)
-            logger.error('Failed To get Issue details', `User Controller: getIssuesAssignedByaCertainUser`, 10)
-            
-            let apiResponse = response.generate(true, 'Failed To get Issue details', 500, {'issues': null, '_length': 0})
-            res.send(apiResponse)
-        } else if (check.isEmpty(result)) {
-            logger.error('Issue details found', `User Controller: getIssuesAssignedByaCertainUser`, 8)
-            let apiResponse = response.generate(true,'No issue Found', 404, {'issues': null, '_length': 0})
-            res.send(apiResponse)
-    
-        } else {
-            let total_issues = result.length
-            logger.info('Issue details found', `User Controller: getIssuesAssignedByaCertainUser`, 1)
-            let apiResponse = response.generate(false, 'Issue details found', 200, {'issues': result, '_length': total_issues})
-            res.send(apiResponse)
-        }
-    })
-}// end getIssuesAssignedByaCertainUser
+// get Issues Assigned By a Certain User
+let getIssuesAssignedByaCertainUser = (req, res) => {
+    IssueModel.find({
+            reporter: req.body.userId
+        })
+        .select('-__v -_id')
+        .lean()
+        .exec((err, result) => {
+            if (err) {
+                console.log(err)
+                logger.error('Failed To get Issue details', `User Controller: getIssuesAssignedByaCertainUser`, 10)
+
+                let apiResponse = response.generate(true, 'Failed To get Issue details', 500, {
+                    'issues': null,
+                    '_length': 0
+                })
+                res.send(apiResponse)
+            } else if (check.isEmpty(result)) {
+                logger.error('Issue details found', `User Controller: getIssuesAssignedByaCertainUser`, 8)
+                let apiResponse = response.generate(true, 'No issue Found', 404, {
+                    'issues': null,
+                    '_length': 0
+                })
+                res.send(apiResponse)
+
+            } else {
+                let total_issues = result.length
+                logger.info('Issue details found', `User Controller: getIssuesAssignedByaCertainUser`, 1)
+                let apiResponse = response.generate(false, 'Issue details found', 200, {
+                    'issues': result,
+                    '_length': total_issues
+                })
+                res.send(apiResponse)
+            }
+        })
+} // end getIssuesAssignedByaCertainUser
 
 // get Issues Assigned to a Certain User
-let getIssuesAssignedToaCertainUser = ( req,res) => {
-    IssueModel.find({assigned_personel: [req.body.userId]})
-    .select('-__v -_id')
-    .lean()
-    .exec((err, result) => {
-        if (err) {
-            console.log(err)
-            logger.error('Failed To get Issue details', `User Controller: getIssuesAssignedByaCertainUser`, 10)
-            
-            let apiResponse = response.generate(true, 'Failed To get Issue details', 500, null)
-            res.send(apiResponse)
-        } else if (check.isEmpty(result)) {
-            logger.error('Issue details found', `User Controller: getIssuesAssignedByaCertainUser`, 8)
-            let apiResponse = response.generate(true,'No issue Found', 404, null)
-            res.send(apiResponse)
-    
-        } else {
-            let total_issues = result.length
-            logger.info('Issue details found', `User Controller: getIssuesAssignedByaCertainUser`, 1)
-            let apiResponse = response.generate(false, 'Issue details found', 200, {'issues': result, '_length': total_issues})
-            res.send(apiResponse)
-        }
-    })
-}// end getIssuesAssignedToaCertainUser
+let getIssuesAssignedToaCertainUser = (req, res) => {
+    IssueModel.find({
+            assigned_personel: [req.body.userId]
+        })
+        .select('-__v -_id')
+        .lean()
+        .exec((err, result) => {
+            if (err) {
+                console.log(err)
+                logger.error('Failed To get Issue details', `User Controller: getIssuesAssignedByaCertainUser`, 10)
+
+                let apiResponse = response.generate(true, 'Failed To get Issue details', 500, null)
+                res.send(apiResponse)
+            } else if (check.isEmpty(result)) {
+                logger.error('Issue details found', `User Controller: getIssuesAssignedByaCertainUser`, 8)
+                let apiResponse = response.generate(true, 'No issue Found', 404, null)
+                res.send(apiResponse)
+
+            } else {
+                let total_issues = result.length
+                logger.info('Issue details found', `User Controller: getIssuesAssignedByaCertainUser`, 1)
+                let apiResponse = response.generate(false, 'Issue details found', 200, {
+                    'issues': result,
+                    '_length': total_issues
+                })
+                res.send(apiResponse)
+            }
+        })
+} // end getIssuesAssignedToaCertainUser
 
 
 let deleteIssue = (req, res) => {
@@ -108,30 +125,89 @@ let deleteIssue = (req, res) => {
 
 
 let createIssue = (req, res) => {
-    let tags = req.body.tags.split(',')
-    let files = rq.body.files.split(',')
-    let issue = new IssueModel({
-        issueId: shortid.generate(),
-        title: req.body.title,
-        tags: tags,
-        description: req.body.description,
-        reporter: req.body.reporter,
-        createdOn: time.now(),
-        modifiedOn: time.now(),
-        files: files
-    })
 
-    issue.save((err, newIssue) => {
-        if (err) {
-            logger.error(err.message, 'issueController: createIssue', 10)
-            let apiResponse = response.generate(true, 'Failed to create new User', 500, null)
-            res.send(apiResponse);
-        } else {
-            logger.info('creation successful', 'issueController: createIssue', 5)
-            let apiResponse = response.generate(false, 'Issue created', 200, newIssue)
-            res.send(apiResponse);
-        }
-    })
+    var tags = req.body.tags.split(',')
+    var fileswthtdir = req.body.files.split(',');
+    
+
+    if (req.body.imagefolder) {
+let issueId = shortid.generate();
+        // moving the files to the upload folder
+        for (let file of fileswthtdir) {
+            let srcpath = `${req.body.imagefolder}/${file}`;
+            let dstpath = `uploads/${issueId}/${file}`
+            fse.move(srcpath, dstpath)
+                .then(() => {
+                    console.log('success moving the file!')
+                    let files = fileswthtdir.map(file => `uploads/${issueId}/${file}`);
+                    // creating issue
+                    let issue = new IssueModel({
+                        issueId: issueId,
+                        title: req.body.title,
+                        tags: tags,
+                        description: req.body.description,
+                        reporter: req.body.reporter,
+                        createdOn: time.now(),
+                        modifiedOn: time.now(),
+                        files: files
+                    })
+
+                    issue.save((err, newIssue) => {
+                        if (err) {
+                            logger.error(err.message, 'issueController: createIssue', 10)
+                            let apiResponse = response.generate(true, 'Failed to create new User', 500, null)
+                            res.send(apiResponse);
+                        } else {
+                            logger.info('creation successful', 'issueController: createIssue', 5)
+                            let apiResponse = response.generate(false, 'Issue created', 200, newIssue)
+                            res.send(apiResponse);
+                        }
+                    })
+
+
+
+                    // removing the temporary folder 
+                    fse.remove(`${req.body.imagefolder}`)
+                        .then(() => {
+                            console.log('success removing!')
+                        })
+                        .catch(err => {
+                            console.error(err)
+                        })
+
+                })
+                .catch(err => {
+                    console.error(err)
+                })
+        };
+
+    } else {
+        let issueId = shortid.generate();
+        let files = []
+        // if there is no upload of images
+        let issue = new IssueModel({
+            issueId: issueId,
+            title: req.body.title,
+            tags: tags,
+            description: req.body.description,
+            reporter: req.body.reporter,
+            createdOn: time.now(),
+            modifiedOn: time.now(),
+            files: files
+        })
+
+        issue.save((err, newIssue) => {
+            if (err) {
+                logger.error(err.message, 'issueController: createIssue', 10)
+                let apiResponse = response.generate(true, 'Failed to create new User', 500, null)
+                res.send(apiResponse);
+            } else {
+                logger.info('creation successful', 'issueController: createIssue', 5)
+                let apiResponse = response.generate(false, 'Issue created', 200, newIssue)
+                res.send(apiResponse);
+            }
+        })
+    }
 
 
 
@@ -141,7 +217,9 @@ let createIssue = (req, res) => {
 let editTitle = (req, res) => {
     let option = {
         title: req.body.title,
-        '$set': {modifiedOn: time.now()}
+        '$set': {
+            modifiedOn: time.now()
+        }
     }
 
     IssueModel.findOneAndUpdate({
@@ -155,7 +233,9 @@ let editDescription = (req, res) => {
     let option = {
 
         description: req.body.description,
-        '$set': {modifiedOn: time.now()}
+        '$set': {
+            modifiedOn: time.now()
+        }
     }
 
     IssueModel.findOneAndUpdate({
@@ -166,11 +246,12 @@ let editDescription = (req, res) => {
 } // end editTitle
 
 let addAssignee = (req, res) => {
-    let push = {'modifiedOn': time.now(),
-    '$push': {
-        "assigned_personel": req.body.assigneeId
+    let push = {
+        'modifiedOn': time.now(),
+        '$push': {
+            "assigned_personel": req.body.assigneeId
+        }
     }
-}
     IssueModel.findOneAndUpdate({
         'issueId': req.params.issueId
     }, push).exec((err, result) => {
@@ -193,12 +274,13 @@ let deleteAssignee = (req, res) => {
     })
 } // delete  addAssignee
 let addWatcher = (req, res) => {
-    let push = { modifiedOn: time.now(),
+    let push = {
+        modifiedOn: time.now(),
         '$push': {
             "watcher": req.body.watcherId
         }
     }
-    
+
     IssueModel.findOneAndUpdate({
         'issueId': req.params.issueId
     }, push).exec((err, result) => {
@@ -207,7 +289,8 @@ let addWatcher = (req, res) => {
 
 } // end  addWatcher 
 let deleteWatcher = (req, res) => {
-    let pull = { modifiedOn: time.now(),
+    let pull = {
+        modifiedOn: time.now(),
         '$pull': {
             "watcher": req.body.watcherId
         }
@@ -220,7 +303,8 @@ let deleteWatcher = (req, res) => {
 } // delete  addAssignee
 
 let addlike = (req, res) => {
-    let increase = { modifiedOn: time.now(),
+    let increase = {
+        modifiedOn: time.now(),
         '$inc': {
             "like": 1
         }
@@ -233,7 +317,8 @@ let addlike = (req, res) => {
 
 } // end  addlike 
 let deletelike = (req, res) => {
-    let decrease = { modifiedOn: time.now(),
+    let decrease = {
+        modifiedOn: time.now(),
         '$inc': {
             "like": -1
         }
@@ -247,7 +332,8 @@ let deletelike = (req, res) => {
 } // end  deletelike
 
 let adddislike = (req, res) => {
-    let increase = { modifiedOn: time.now(),
+    let increase = {
+        modifiedOn: time.now(),
         '$inc': {
             "dislike": 1
         }
@@ -260,7 +346,8 @@ let adddislike = (req, res) => {
 
 } // end  addlike 
 let deletedislike = (req, res) => {
-    let decrease = { modifiedOn: time.now(),
+    let decrease = {
+        modifiedOn: time.now(),
         '$inc': {
             "dislike": -1
         }
