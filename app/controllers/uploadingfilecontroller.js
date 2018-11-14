@@ -1,6 +1,11 @@
 
 const response = require('./../libs/responseLib')
 const logger = require('./../libs/loggerLib');
+const path = require('path');
+
+// models 
+const IssueModel = mongoose.model('Issue_3')
+
 
 let uploadFiles = (req, res) => {
     
@@ -21,6 +26,9 @@ let uploadFiles = (req, res) => {
         res.send(apiResponse)
     }
 }
+
+
+
 module.exports = {
     uploadFiles: uploadFiles
 }

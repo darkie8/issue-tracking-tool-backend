@@ -7,7 +7,7 @@ const callback = require('./../libs/controllerCallbackLib');
 const check = require('../libs/checkLib');
 // models
 const UserModel = mongoose.model('User_1')
-const IssueModel = mongoose.model('Issue_2')
+const IssueModel = mongoose.model('Issue_3')
 
 let getAllIssues = (req, res) => {
     IssueModel.find()

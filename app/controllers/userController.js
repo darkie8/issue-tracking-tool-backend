@@ -14,7 +14,7 @@ const issue_tracking_mail = require('./../../config/mailConfig')
 
 const UserModel = mongoose.model('User_1')
 const authModel = mongoose.model('Auth')
-const IssueModel = mongoose.model('Issue_2')
+const IssueModel = mongoose.model('Issue_3')
 
 /* Get all user Details */
 let getAllUser = (req, res) => {

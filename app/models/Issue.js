@@ -51,12 +51,20 @@ let issueSchema = new Schema({
     type: Number,
     default: 0
   },
+  likegiver: {
+    type: Array,
+    default: []
+  },
   dislike: {
     type: Number,
     default: 0
+  },
+  dislikegiver: {
+    type: Array,
+    default: []
   }
 
 })
 
 
-mongoose.model('Issue_2', issueSchema);
+mongoose.model('Issue_3', issueSchema);
