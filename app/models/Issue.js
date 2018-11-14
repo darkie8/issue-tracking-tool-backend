@@ -12,6 +12,10 @@ let issueSchema = new Schema({
     type: String,
     default: ''
   },
+  tags: {
+    type: Array,
+    default: []
+  },
   status: {
     type: String,
     default: 'in-progress'
@@ -67,4 +71,4 @@ let issueSchema = new Schema({
 })
 
 
-mongoose.model('Issue_3', issueSchema);
+mongoose.model('Issue_4', issueSchema);

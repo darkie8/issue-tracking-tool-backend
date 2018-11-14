@@ -14,7 +14,7 @@ module.exports.setRouter = (app) => {
     app.get(`${baseUrl}/getIssuesAssignedToaCertainUser/:authToken`, auth.isAuthenticated, issueController.getIssuesAssignedToaCertainUser)
     app.get(`${baseUrl}/:issueId/:authToken`,auth.isAuthenticated, issueController.getSingleIssue)
     app.get(`${baseUrl}/paginateIssues/:paginatingTime/:authToken`,auth.isAuthenticated, issueController.getAllIssuesPaginate)
-    app.post(`${baseUrl}/createIssue/:authToken`, issueController.createIssue);
+    app.post(`${baseUrl}/createIssue/:authToken`,auth.isAuthenticated, issueController.createIssue);
     app.post(`${baseUrl}/:issueId/addAssignee/:authToken`,auth.isAuthenticated, issueController.addAssignee);
     app.post(`${baseUrl}/:issueId/deleteAssignee/:authToken`,auth.isAuthenticated, issueController.deleteAssignee);
     app.post(`${baseUrl}/:issueId/addWatcher/:authToken`,auth.isAuthenticated, issueController.addWatcher);

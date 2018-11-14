@@ -7,7 +7,7 @@ const callback = require('./../libs/controllerCallbackLib');
 const check = require('../libs/checkLib');
 // models
 const UserModel = mongoose.model('User_1')
-const IssueModel = mongoose.model('Issue_3')
+const IssueModel = mongoose.model('Issue_4')
 
 let getAllIssues = (req, res) => {
     IssueModel.find()
@@ -108,14 +108,17 @@ let deleteIssue = (req, res) => {
 
 
 let createIssue = (req, res) => {
+    let tags = req.body.tags.split(',')
+    let files = rq.body.files.split(',')
     let issue = new IssueModel({
         issueId: shortid.generate(),
         title: req.body.title,
+        tags: tags,
         description: req.body.description,
         reporter: req.body.reporter,
         createdOn: time.now(),
         modifiedOn: time.now(),
-        file: ""
+        files: files
     })
 
     issue.save((err, newIssue) => {
