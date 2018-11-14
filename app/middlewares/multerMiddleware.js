@@ -4,8 +4,8 @@ const fse = require('fs-extra')
 var storing = multer.diskStorage({
     destination:function(req,file,cb){
         try{
-            console.log(req.body)
-            let directoryName = `${req.body.title.replace(/ /gi, '_')}_${req.body.reporter.replace(/ /gi, '_')}`
+            console.log(req.query)
+            let directoryName = `${time.getLocalTime().replace(/ |, |:/gi,'_')}_${req.query.reporter.replace(/ /gi, '_')}`
            let dirPath = `tempUploads/${directoryName}`
             fse.ensureDir(dirPath,err => {
                console.log('cant create directory')
@@ -22,7 +22,7 @@ var storing = multer.diskStorage({
     }
 });
 
-var upload = multer({storage:storing}).single("demo[]");
+var upload = multer({storage:storing}).array("demo[]",5);
 
 module.exports = {
     upload: upload

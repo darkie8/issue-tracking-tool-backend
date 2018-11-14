@@ -4,7 +4,7 @@ const logger = require('./../libs/loggerLib');
 const path = require('path');
 const mongoose = require('mongoose');
 // models 
-const IssueModel = mongoose.model('Issue_4')
+const IssueModel = mongoose.model('Issue_4');
 
 
 let uploadFiles = (req, res) => {

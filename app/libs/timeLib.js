@@ -5,13 +5,13 @@ let now = () => moment().format();
 
 
 let getLocalTime = () => 
-moment(now).tz(timeZone).format('MMMM Do YYYY, h:mm:ss');
-
+moment(now()).tz(timeZone).format('MMMM Do YYYY, h:mm:ss');
+let normallocalvalue = () => moment(now()).tz(timeZone).format()
 
 let convertToLocalTime = (time) =>  momenttz.tz(getLocalTime(), timezone).clone().tz(time).format('MMMM Do YYYY, h:mm:ss')
 
 module.exports = {
-  now: now,
+  now: normallocalvalue,
   getLocalTime: getLocalTime,
   convertToLocalTime: convertToLocalTime
 }
