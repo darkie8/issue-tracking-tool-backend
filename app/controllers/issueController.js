@@ -185,7 +185,7 @@ let issueId = shortid.generate();
         let issueId = shortid.generate();
         let files = []
         // if there is no upload of images
-        let issue = new IssueModel({
+        let issue1 = new IssueModel({
             issueId: issueId,
             title: req.body.title,
             tags: tags,
@@ -196,7 +196,7 @@ let issueId = shortid.generate();
             files: files
         })
 
-        issue.save((err, newIssue) => {
+        issue1.save((err, newIssue) => {
             if (err) {
                 logger.error(err.message, 'issueController: createIssue', 10)
                 let apiResponse = response.generate(true, 'Failed to create new User', 500, null)
