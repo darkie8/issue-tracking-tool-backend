@@ -21,8 +21,9 @@ let getAllIssues = (req, res) => {
 
 let getAllIssuesPaginate = (req, res) => {
     let paginatingTime = new Number(req.params.paginatingTime)
-
-    IssueModel.find().skip(paginatingTime).limit(10)
+    let limit = new Number(req.header('limit'))
+    console.log(req.header('limit'));
+    IssueModel.find().skip(paginatingTime).limit(limit)
         .select(' -__v -_id')
         .lean()
         .exec((err, result) => {
@@ -44,7 +45,7 @@ let getSingleIssue = (req, res) => {
 // get Issues Assigned By a Certain User
 let getIssuesAssignedByaCertainUser = (req, res) => {
     IssueModel.find({
-            reporter: req.body.userId
+            reporter: req.user.userId
         })
         .select('-__v -_id')
         .lean()
@@ -132,6 +133,29 @@ let createIssue = (req, res) => {
 
     if (req.body.imagefolder) {
 let issueId = shortid.generate();
+
+let files = fileswthtdir.map(file => `uploads/${issueId}/${file}`);
+// creating issue
+let issue = new IssueModel({
+    issueId: issueId,
+    title: req.body.title,
+    tags: tags,
+    description: req.body.description,
+    reporter: req.user.userId,
+    createdOn: time.now(),
+    modifiedOn: time.now(),
+    files: files
+})
+
+issue.save((err, newIssue) => {
+    if (err) {
+        logger.error(err.message, 'issueController: createIssue', 10)
+        let apiResponse = response.generate(true, 'Failed to create new User', 500, null)
+        res.send(apiResponse);
+    } else {
+        logger.info('creation successful', 'issueController: createIssue', 5)
+        let apiResponse = response.generate(false, 'Issue created', 200, newIssue)
+        res.send(apiResponse);
         // moving the files to the upload folder
         for (let file of fileswthtdir) {
             let srcpath = `${req.body.imagefolder}/${file}`;
@@ -139,33 +163,6 @@ let issueId = shortid.generate();
             fse.move(srcpath, dstpath)
                 .then(() => {
                     console.log('success moving the file!')
-                    let files = fileswthtdir.map(file => `uploads/${issueId}/${file}`);
-                    // creating issue
-                    let issue = new IssueModel({
-                        issueId: issueId,
-                        title: req.body.title,
-                        tags: tags,
-                        description: req.body.description,
-                        reporter: req.body.reporter,
-                        createdOn: time.now(),
-                        modifiedOn: time.now(),
-                        files: files
-                    })
-
-                    issue.save((err, newIssue) => {
-                        if (err) {
-                            logger.error(err.message, 'issueController: createIssue', 10)
-                            let apiResponse = response.generate(true, 'Failed to create new User', 500, null)
-                            res.send(apiResponse);
-                        } else {
-                            logger.info('creation successful', 'issueController: createIssue', 5)
-                            let apiResponse = response.generate(false, 'Issue created', 200, newIssue)
-                            res.send(apiResponse);
-                        }
-                    })
-
-
-
                     // removing the temporary folder 
                     fse.remove(`${req.body.imagefolder}`)
                         .then(() => {
@@ -180,6 +177,10 @@ let issueId = shortid.generate();
                     console.error(err)
                 })
         };
+    }
+})
+
+        
 
     } else {
         let issueId = shortid.generate();
@@ -190,7 +191,7 @@ let issueId = shortid.generate();
             title: req.body.title,
             tags: tags,
             description: req.body.description,
-            reporter: req.body.reporter,
+            reporter: req.user.userId,
             createdOn: time.now(),
             modifiedOn: time.now(),
             files: files

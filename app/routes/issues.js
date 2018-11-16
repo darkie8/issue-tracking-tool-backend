@@ -9,7 +9,7 @@ const upload = require('./../middlewares/multerMiddleware')
 module.exports.setRouter = (app) => {
 
     let baseUrl = `${appConfig.apiVersion}/issue`;
-    app.get(`${baseUrl}/allissues`, auth.isAuthenticated, issueController.getAllIssues)
+    app.get(`${baseUrl}/allissues`,auth.isAuthenticated, issueController.getAllIssues)
     app.get(`${baseUrl}/getIssuesAssignedByaCertainUser/:authToken`, auth.isAuthenticated, issueController.getIssuesAssignedByaCertainUser)
     app.get(`${baseUrl}/getIssuesAssignedToaCertainUser/:authToken`, auth.isAuthenticated, issueController.getIssuesAssignedToaCertainUser)
     app.get(`${baseUrl}/:issueId/:authToken`,auth.isAuthenticated, issueController.getSingleIssue)

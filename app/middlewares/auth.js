@@ -49,8 +49,8 @@ let isAuthenticated = (req, res, next) => {
             console.log('--------------------')
             console.log(decoded.data)
 
-            req.user = {userId: decoded.data.userId}
-
+            req.user = {userId: decoded.data.userId, userName: `${decoded.data.firstName} ${decoded.data.lastName}`}
+           
             next()
           }
         })
