@@ -9,12 +9,28 @@ const upload = require('./../middlewares/multerMiddleware')
 module.exports.setRouter = (app) => {
 
     let baseUrl = `${appConfig.apiVersion}/issue`;
+
+    // get all issues
     app.get(`${baseUrl}/allissues`,auth.isAuthenticated, issueController.getAllIssues)
-    app.get(`${baseUrl}/getIssuesAssignedByaCertainUser/:authToken`, auth.isAuthenticated, issueController.getIssuesAssignedByaCertainUser)
-    app.get(`${baseUrl}/getIssuesAssignedToaCertainUser/:authToken`, auth.isAuthenticated, issueController.getIssuesAssignedToaCertainUser)
-    app.get(`${baseUrl}/:issueId/:authToken`,auth.isAuthenticated, issueController.getSingleIssue)
+
+    // get paginated all ussues
     app.get(`${baseUrl}/paginateIssues/:paginatingTime/:authToken`,auth.isAuthenticated, issueController.getAllIssuesPaginate)
+
+    // get issues assigned and reported
+    app.get(`${baseUrl}/getIssuesAssignedByaCertainUser/:authToken`, auth.isAuthenticated, issueController.getIssuesAssignedByaCertainUser)
+    app.get(`${baseUrl}/getIssuesAssignedToaCertainUser/:authToken`, auth.isAuthenticated, issueController.getIssuesAssignedToaCertainUser),
+
+    // get  paginated issues assigned and reported respectively
+    app.get(`${baseUrl}/getIssuesAssignedByaCertainUserPaginate/:paginatingTime/:limit/:authToken`, auth.isAuthenticated, issueController.getIssuesAssignedByaCertainUserPaginate)
+    app.get(`${baseUrl}/getIssuesAssignedToaCertainUserPaginate/:paginatingTime/:limit/:authToken`, auth.isAuthenticated, issueController.getIssuesAssignedToaCertainUserPaginate)
+
+    // get single issue
+    app.get(`${baseUrl}/:issueId/:authToken`,auth.isAuthenticated, issueController.getSingleIssue)
+
+    // creating issues
     app.post(`${baseUrl}/createIssue/:authToken`,auth.isAuthenticated, issueController.createIssue);
+
+    // editing fields
     app.post(`${baseUrl}/:issueId/addAssignee/:authToken`,auth.isAuthenticated, issueController.addAssignee);
     app.post(`${baseUrl}/:issueId/deleteAssignee/:authToken`,auth.isAuthenticated, issueController.deleteAssignee);
     app.post(`${baseUrl}/:issueId/addWatcher/:authToken`,auth.isAuthenticated, issueController.addWatcher);
@@ -25,6 +41,10 @@ module.exports.setRouter = (app) => {
     app.post(`${baseUrl}/:issueId/deletedislike/:authToken`,auth.isAuthenticated, issueController.deletedislike);
     app.put(`${baseUrl}/:issueId/editTitle/:authToken`, issueController.editTitle);
     app.put(`${baseUrl}/:issueId/editDescription/:authToken`, issueController.editDescription);
+
+    // deleting issues
     app.post(`${baseUrl}/:issueId/delete/:authToken`, issueController.deleteIssue);
+
+    // uploading images
     app.post(`${baseUrl}/upload/:authToken`,[auth.isAuthenticated,upload.upload], uploadcontroller.uploadFiles);
 }

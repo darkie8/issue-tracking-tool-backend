@@ -79,10 +79,24 @@ let getIssuesAssignedByaCertainUser = (req, res) => {
         })
 } // end getIssuesAssignedByaCertainUser
 
+let getIssuesAssignedByaCertainUserPaginate = (req, res) => {
+    let paginatingTime = new Number(req.params.paginatingTime)
+    let limit = new Number(req.header('limit'))
+    console.log(req.header('limit'));
+    IssueModel.find({
+        reporter: req.user.userId
+    }).skip(paginatingTime).limit(limit)
+        .select(' -__v -_id')
+        .lean()
+        .exec((err, result) => {
+            callback.crudCallback(err, result, res, 'getAllIssues')
+        })
+} // end getIssuesAssignedByaCertainUser Paginate
+
 // get Issues Assigned to a Certain User
 let getIssuesAssignedToaCertainUser = (req, res) => {
     IssueModel.find({
-            assigned_personel: [req.body.userId]
+            assigned_personel: [ req.user.userId]
         })
         .select('-__v -_id')
         .lean()
@@ -101,6 +115,7 @@ let getIssuesAssignedToaCertainUser = (req, res) => {
             } else {
                 let total_issues = result.length
                 logger.info('Issue details found', `User Controller: getIssuesAssignedByaCertainUser`, 1)
+
                 let apiResponse = response.generate(false, 'Issue details found', 200, {
                     'issues': result,
                     '_length': total_issues
@@ -110,6 +125,19 @@ let getIssuesAssignedToaCertainUser = (req, res) => {
         })
 } // end getIssuesAssignedToaCertainUser
 
+let getIssuesAssignedToaCertainUserPaginate = (req, res) => {
+    let paginatingTime = new Number(req.params.paginatingTime)
+    let limit = new Number(req.params.limit)
+    console.log(req.header('limit'));
+    IssueModel.find({
+        assigned_personel: [ req.user.userId]
+    }).skip(paginatingTime).limit(limit)
+        .select(' -__v -_id')
+        .lean()
+        .exec((err, result) => {
+            callback.crudCallback(err, result, res, 'getAllIssues')
+        })
+} // end getIssuesAssignedToaCertainUser Paginate
 
 let deleteIssue = (req, res) => {
 
@@ -377,5 +405,7 @@ module.exports = {
     adddislike: adddislike,
     deletedislike: deletedislike,
     getIssuesAssignedByaCertainUser: getIssuesAssignedByaCertainUser,
-    getIssuesAssignedToaCertainUser: getIssuesAssignedToaCertainUser
+    getIssuesAssignedToaCertainUser: getIssuesAssignedToaCertainUser,
+    getIssuesAssignedByaCertainUserPaginate: getIssuesAssignedByaCertainUserPaginate,
+    getIssuesAssignedToaCertainUserPaginate: getIssuesAssignedToaCertainUserPaginate
 }
