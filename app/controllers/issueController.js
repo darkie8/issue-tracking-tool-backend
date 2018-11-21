@@ -274,6 +274,23 @@ let editDescription = (req, res) => {
     })
 } // end editTitle
 
+let editTags = (req, res) => {
+    console.log(req.body)
+    let tags = req.body.tags.split(',');
+    let option = {
+
+        tags: [...tags],
+        '$set': {
+            modifiedOn: time.now()
+        }
+    }
+
+    IssueModel.findOneAndUpdate({
+        'issueId': req.params.issueId
+    }, option).exec((err, result) => {
+        callback.crudCallback(err, result, res, 'editUser')
+    })
+} // end editTitle
 let addAssignee = (req, res) => {
     let push = {
         'modifiedOn': time.now(),
@@ -407,5 +424,6 @@ module.exports = {
     getIssuesAssignedByaCertainUser: getIssuesAssignedByaCertainUser,
     getIssuesAssignedToaCertainUser: getIssuesAssignedToaCertainUser,
     getIssuesAssignedByaCertainUserPaginate: getIssuesAssignedByaCertainUserPaginate,
-    getIssuesAssignedToaCertainUserPaginate: getIssuesAssignedToaCertainUserPaginate
+    getIssuesAssignedToaCertainUserPaginate: getIssuesAssignedToaCertainUserPaginate,
+    editTags: editTags
 }

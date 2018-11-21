@@ -5,7 +5,8 @@ const uploadcontroller = require('./../controllers/uploadingfilecontroller')
 const appConfig = require("./../../config/appConfig")
 const auth = require('./../middlewares/auth')
 const upload = require('./../middlewares/multerMiddleware')
-
+const download = require('./../middlewares/download')
+const downloadcallback = require('./../controllers/downloadController')
 module.exports.setRouter = (app) => {
 
     let baseUrl = `${appConfig.apiVersion}/issue`;
@@ -39,12 +40,16 @@ module.exports.setRouter = (app) => {
     app.post(`${baseUrl}/:issueId/deletelike`,auth.isAuthenticated, issueController.deletelike);
     app.post(`${baseUrl}/:issueId/adddislike/:authToken`,auth.isAuthenticated, issueController.adddislike);
     app.post(`${baseUrl}/:issueId/deletedislike/:authToken`,auth.isAuthenticated, issueController.deletedislike);
-    app.put(`${baseUrl}/:issueId/editTitle/:authToken`, issueController.editTitle);
-    app.put(`${baseUrl}/:issueId/editDescription/:authToken`, issueController.editDescription);
+    app.put(`${baseUrl}/:issueId/editTitle/:authToken`,auth.isAuthenticated, issueController.editTitle);
+    app.put(`${baseUrl}/:issueId/editDescription/:authToken`,auth.isAuthenticated, issueController.editDescription);
+    app.put(`${baseUrl}/:issueId/editTags/:authToken`,auth.isAuthenticated, issueController.editTags);
 
     // deleting issues
     app.post(`${baseUrl}/:issueId/delete/:authToken`, issueController.deleteIssue);
 
     // uploading images
     app.post(`${baseUrl}/upload/:authToken`,[auth.isAuthenticated,upload.upload], uploadcontroller.uploadFiles);
+
+    // download images
+    app.post(`${baseUrl}/download/:authToken`,[auth.isAuthenticated,download.downloadIssueFiles], downloadcallback.downloadController)
 }
