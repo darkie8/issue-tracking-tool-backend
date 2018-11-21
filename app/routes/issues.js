@@ -51,5 +51,5 @@ module.exports.setRouter = (app) => {
     app.post(`${baseUrl}/upload/:authToken`,[auth.isAuthenticated,upload.upload], uploadcontroller.uploadFiles);
 
     // download images
-    app.post(`${baseUrl}/download/:authToken`,[auth.isAuthenticated,download.downloadIssueFiles], downloadcallback.downloadController)
+    app.post(`${baseUrl}/:issueId/download/:authToken`,auth.isAuthenticated, download.downloadIssueFiles)
 }

@@ -6,7 +6,7 @@ const path = require('path');
 // model 
 const IssueModel = mongoose.model('Issue_4')
 
-let downloadIssueFiles = (req,res,next) => {
+let downloadIssueFiles = (req,res) => {
 
 IssueModel.findOne({
     issueId: req.params.issueId
@@ -19,9 +19,10 @@ IssueModel.findOne({
         res.send(apiResponse)
     }
     else {
-        res.sendFile(req.body.filePath);
+        let filePath = path.join(__dirname,`../../uploads/${req.params.issueId}`) + `/${req.body.filePath}`
+        res.sendFile(filePath);
     }
-    next()
+    
 })
 
 }
