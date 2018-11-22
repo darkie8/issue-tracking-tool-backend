@@ -37,7 +37,7 @@ module.exports.setRouter = (app) => {
     app.post(`${baseUrl}/:issueId/addWatcher/:authToken`,auth.isAuthenticated, issueController.addWatcher);
     app.post(`${baseUrl}/:issueId/deleteWatcher/:authToken`,auth.isAuthenticated, issueController.deleteWatcher);
     app.post(`${baseUrl}/:issueId/addlike/:authToken`,auth.isAuthenticated, issueController.addlike);
-    app.post(`${baseUrl}/:issueId/deletelike`,auth.isAuthenticated, issueController.deletelike);
+    app.post(`${baseUrl}/:issueId/deletelike/:authToken`,auth.isAuthenticated, issueController.deletelike);
     app.post(`${baseUrl}/:issueId/adddislike/:authToken`,auth.isAuthenticated, issueController.adddislike);
     app.post(`${baseUrl}/:issueId/deletedislike/:authToken`,auth.isAuthenticated, issueController.deletedislike);
     app.put(`${baseUrl}/:issueId/editTitle/:authToken`,auth.isAuthenticated, issueController.editTitle);

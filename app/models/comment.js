@@ -8,14 +8,6 @@ const mongoose = require('mongoose')
     createdBy: {
         type: String
     },
-    assigned_personel: {
-      type: Array,
-      default: []
-    },
-    watcher: {
-      type: Array,
-      default: []
-    },
     createdOn :{
       type:Date,
       default:""
@@ -24,11 +16,24 @@ const mongoose = require('mongoose')
       type:Date,
       default:""
     },
-    files: {
-      type: String,
+    like: {
+      type: Number,
+      default: 0
+    },
+    likegiver: {
+      type: Array,
+      default: []
+    },
+    dislike: {
+      type: Number,
+      default: 0
+    },
+    dislikegiver: {
+      type: Array,
+      default: []
     }
   
   })
   
   
-  mongoose.model('commentSchema', commentSchema);
+  mongoose.model('commentSchema_1', commentSchema);

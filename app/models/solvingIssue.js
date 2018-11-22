@@ -31,9 +31,25 @@ const mongoose = require('mongoose')
     comments: {
       type: Array,
       default: []
+    },
+    like: {
+      type: Number,
+      default: 0
+    },
+    likegiver: {
+      type: Array,
+      default: []
+    },
+    dislike: {
+      type: Number,
+      default: 0
+    },
+    dislikegiver: {
+      type: Array,
+      default: []
     }
   
   })
   
   
-  mongoose.model('solvingIssue_1', solvingIssue);
+  mongoose.model('solvingIssue_2', solvingIssue);

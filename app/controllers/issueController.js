@@ -353,6 +353,9 @@ let addlike = (req, res) => {
         modifiedOn: time.now(),
         '$inc': {
             "like": 1
+        },
+        '$push': {
+            "likegiver": req.body.likegiver
         }
     }
     IssueModel.findOneAndUpdate({
@@ -367,6 +370,9 @@ let deletelike = (req, res) => {
         modifiedOn: time.now(),
         '$inc': {
             "like": -1
+        },
+        '$pull': {
+            "likegiver": req.body.likegiver
         }
     }
     IssueModel.findOneAndUpdate({
@@ -376,12 +382,15 @@ let deletelike = (req, res) => {
     })
 
 } // end  deletelike
-
+// adddislike
 let adddislike = (req, res) => {
     let increase = {
         modifiedOn: time.now(),
         '$inc': {
             "dislike": 1
+        },
+        '$push': {
+            "dislikegiver": req.body.dislikegiver
         }
     }
     IssueModel.findOneAndUpdate({
@@ -390,12 +399,16 @@ let adddislike = (req, res) => {
         callback.crudCallback(err, result, res, 'editTitleandDescription')
     })
 
-} // end  addlike 
+} // end  adddislike 
+// deletedislike
 let deletedislike = (req, res) => {
     let decrease = {
         modifiedOn: time.now(),
         '$inc': {
             "dislike": -1
+        },
+        '$pull': {
+            "dislikegiver": req.body.dislikegiver
         }
     }
     IssueModel.findOneAndUpdate({
@@ -404,7 +417,8 @@ let deletedislike = (req, res) => {
         callback.crudCallback(err, result, res, 'editTitleandDescription')
     })
 
-} // end  deletelike
+} // end  deletedislike
+
 module.exports = {
     getAllIssues: getAllIssues,
     getAllIssuesPaginate: getAllIssuesPaginate,
