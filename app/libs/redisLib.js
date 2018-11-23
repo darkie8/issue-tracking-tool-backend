@@ -2,8 +2,8 @@
 const check = require("./checkLib");
 const redis = require('redis');
 let redisOption = {
-    port      : 6379,              //jbnjknjknkn
-    host      : '192.168.99.100'
+    port: 6379, //jbnjknjknkn
+    host: '192.168.99.100'
 }
 let client = redis.createClient(redisOption);
 
@@ -13,10 +13,10 @@ client.on('connect', () => {
 
 });
 
-let getAllUsersInAHash = (hashName, callback) => {
+let getAllThingsInAHash = (hashName, callback) => {
 
     client.HGETALL(hashName, (err, result) => {
-        
+
 
         if (err) {
 
@@ -25,7 +25,7 @@ let getAllUsersInAHash = (hashName, callback) => {
 
         } else if (check.isEmpty(result)) {
 
-            console.log("online user list is empty");
+            console.log("list is empty");
             console.log(result)
 
             callback(null, {})
@@ -39,11 +39,11 @@ let getAllUsersInAHash = (hashName, callback) => {
     });
 
 
-}// end get all users in a hash
+} // end get all users in a hash
 
 // function to set new online user.
-let setANewOnlineUserInHash = (hashName, key, value, callback) => {
-   
+let setThingsInHash = (hashName, key, value, callback) => {
+
     client.HMSET(hashName, [
         key, value
     ], (err, result) => {
@@ -52,25 +52,24 @@ let setANewOnlineUserInHash = (hashName, key, value, callback) => {
             callback(err, null)
         } else {
 
-            console.log("user has been set in the hash map");
+            console.log("key,value set in the hash map");
             console.log(result)
             callback(null, result)
         }
     });
 
 
-}// end set a new online user in hash
+} // end set a new online user in hash
 
-let deleteUserFromHash = (hashName,key)=>{
+let deleteThingsFromHash = (hashName, key) => {
 
-    client.HDEL(hashName,key);
+    client.HDEL(hashName, key);
     return true;
 
-}// end delete user from hash
+} // end delete user from hash
 
 module.exports = {
-    getAllUsersInAHash:getAllUsersInAHash,
-    setANewOnlineUserInHash:setANewOnlineUserInHash,
-    deleteUserFromHash:deleteUserFromHash
+    getAllThingsInAHash: getAllThingsInAHash,
+    setThingsInHash: setThingsInHash,
+    deleteThingsFromHash: deleteThingsFromHash
 }
-

@@ -419,6 +419,48 @@ let deletedislike = (req, res) => {
 
 } // end  deletedislike
 
+// addComment
+let addComment = (issueId,commentId) => {
+    let option = {
+        modifiedOn: time.now(),
+        '$push': {
+            "comments": commentId
+        }
+    }
+    IssueModel.findOneAndUpdate({'issueId': issueId},option).exec((err,res)=>{
+        if (err) {
+            logger.error(err.message, 'issueController: addComment', 10)
+            return response.generate(true, 'Failed to add commentr', 500, null)
+            
+        } else {
+            logger.info('creation successful', 'issueController: addComment', 5)
+            return response.generate(false, 'comment added', 200, res)
+            
+        }
+    })
+}
+// end addComment
+// addComment
+let deleteComment = (issueId,commentId) => {
+    let option = {
+        modifiedOn: time.now(),
+        '$pull': {
+            "comments": commentId
+        }
+    }
+    IssueModel.findOneAndUpdate({'issueId': issueId},option).exec((err,res)=>{
+        if (err) {
+            logger.error(err.message, 'issueController: deleteComment', 10)
+            return response.generate(true, 'Failed to delete commentr', 500, null)
+            
+        } else {
+            logger.info('creation successful', 'issueController: deleteComment', 5)
+            return response.generate(false, 'comment deleted', 200, res)
+            
+        }
+    })
+}
+
 module.exports = {
     getAllIssues: getAllIssues,
     getAllIssuesPaginate: getAllIssuesPaginate,
@@ -439,5 +481,7 @@ module.exports = {
     getIssuesAssignedToaCertainUser: getIssuesAssignedToaCertainUser,
     getIssuesAssignedByaCertainUserPaginate: getIssuesAssignedByaCertainUserPaginate,
     getIssuesAssignedToaCertainUserPaginate: getIssuesAssignedToaCertainUserPaginate,
-    editTags: editTags
+    editTags: editTags,
+    addComment: addComment,
+    deleteComment: deleteComment
 }
