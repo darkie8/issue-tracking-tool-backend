@@ -12,6 +12,7 @@ const logger = require('./app/libs/loggerLib');
 const routeLoggerMiddleware = require('./app/middlewares/routeLogger.js');
 const globalErrorMiddleware = require('./app/middlewares/appErrorHandler');
 const mongoose = require('mongoose');
+const commentSocket = require('././app/libs/commentSocketLib');
 const morgan = require('morgan');
 
 
@@ -95,7 +96,7 @@ let onError = (error) => {
 server.on('error', onError);
 
 /**
- * Event listener for HTTP server "listening" event.
+ * Event listener for HTTPS server "listening" event.
  */
 
 let onListening = () => {
@@ -116,9 +117,7 @@ server.on('listening', onListening);
 
 
 // socket io connection handler
-// const IssueDescriptionSocketLib = require("./app/libs/IssueDescriptionSocketLib")
-// const groupSocketServer = IssueDescriptionSocketLib.setServerGroup(server)
-
+ commentSocket.setServerGroup(server);
 // end socketio connection handler
 
 

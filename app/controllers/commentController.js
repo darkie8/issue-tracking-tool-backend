@@ -5,9 +5,11 @@ const response = require('./../libs/responseLib')
 const logger = require('./../libs/loggerLib');
 const callback = require('./../libs/controllerCallbackLib');
 const check = require('../libs/checkLib');
- // model
-const CommentModel = mongoose.model('commentSchema_1');
-
+ // models
+ require('./../models/comment');
+const CommentModel = mongoose.model('commentSchema_2');
+require('./../models/Issue');
+const IssueModel = mongoose.model('Issue_4')
 
 let createComment = (comment) => {
     let commentMod = new CommentModel(comment)
@@ -38,7 +40,20 @@ let deleteComment = (commentId) => {
         }
     })
 }
+
+let getSingleComment =(req, res) => {
+IssueModel.find({
+iscommentId: req.params.commentId
+}).select(' -__v -_id')
+.lean()
+.exec((err, result) => {
+    callback.crudCallback(err, result, res, 'getSingleComment')
+})
+}
+
+
 module.exports ={
     createComment: createComment,
-    deleteComment: deleteComment
+    deleteComment: deleteComment,
+    getSingleComment: getSingleComment
 }

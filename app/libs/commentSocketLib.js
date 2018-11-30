@@ -11,10 +11,6 @@ const response = require('./responseLib')
 const redisLib = require("./redisLib");
 const commentController = require('../controllers/commentController');
 const issueController = require('../controllers/issueController')
-// models 
-const UserModel = mongoose.model('User_1')
-const IssueModel = mongoose.model('Issue_4')
-const CommentModel = mongoose.model('commentSchema_1');
 
 let setServer = (server) => {
     let io = socketio.listen(server)
@@ -82,11 +78,10 @@ let setServer = (server) => {
             comment['createdOn'] = time.now();
             comment['modifiedOn'] = time.now();
             console.log(comment);
-            let comment = Promise.resolve(comment);
-            comment.then(res => {
+            let commentPromise = Promise.resolve(comment);
+            commentPromise.then(res => {
                 let response = commentController.createComment(res);
 
-                socket.emit('verified-save-comment', 'send issueInfo')
                 let response2 = issueController.addComment(socket.issueId, total.comment.commentId)
                 socket.emit('response', {
                     response1: response,

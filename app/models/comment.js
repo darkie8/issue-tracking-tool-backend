@@ -5,6 +5,9 @@ const mongoose = require('mongoose')
     commentId: {
       type: String
     },
+    description: {
+      type: String,
+    },
     createdBy: {
         type: String
     },
@@ -36,4 +39,4 @@ const mongoose = require('mongoose')
   })
   
   
-  mongoose.model('commentSchema_1', commentSchema);
+  mongoose.model('commentSchema_2', commentSchema);

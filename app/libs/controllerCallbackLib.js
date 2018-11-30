@@ -48,9 +48,9 @@ let crudCallback = (err, result, res, function1) => {
         loggererr = 'getAllRoom'
         msg = ['Failed To get rooms details', 'No Room Found', 'Rooms details found']
 
-    } else if (function1 == 'getSingleRoom') {
-        loggererr = 'getSingleRoom'
-        msg = ['Failed To get room details', 'No room Found', 'Room details found']
+    } else if (function1 == 'getSingleComment') {
+        loggererr = 'getSingleComment'
+        msg = ['Failed To get Comment details', 'No Comment Found', 'Comment details found']
     } else {
         return
     }

@@ -7,7 +7,7 @@ const callback = require('./../libs/controllerCallbackLib');
 const check = require('../libs/checkLib');
 const fse = require('fs-extra');
 // models
-const UserModel = mongoose.model('User_1')
+require('./../models/Issue');
 const IssueModel = mongoose.model('Issue_4')
 
 let getAllIssues = (req, res) => {
