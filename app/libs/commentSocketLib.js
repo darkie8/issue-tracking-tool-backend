@@ -59,6 +59,7 @@ let setServer = (server) => {
                     } else {
 
                         console.log(`${key} is commenting on ${value}`);
+                        socket.emit('ask for comment', 'send comment')
                         // setting room name
                         socket.roomNotify = 'notification-box'
                         // joining room.
@@ -82,15 +83,12 @@ let setServer = (server) => {
             commentPromise.then(res => {
                 let response = commentController.createComment(res);
 
-                let response2 = issueController.addComment(socket.issueId, total.comment.commentId)
+                let response2 = issueController.addComment(socket.issueId, comment.commentId)
                 socket.emit('response', {
                     response1: response,
                     response2: response2
                 })
-                socket.roomComment = `${socket.issueId}`
-                // joining room.
-                socket.join(socket.roomComment)
-                socket.to(socket.roomComment).broadcast.emit('comment-view', res);
+                socket.emit('comment-view', res);
             })
 
 
@@ -116,8 +114,9 @@ let setServer = (server) => {
             })
         })
         socket.on('typing', data => {
-            socket.join(socket.roomComment);
-            socket.to(socket.roomComment).broadcast.emit('typing-sent', data);
+            let room = 'typing-now';
+            socket.join(room);
+            socket.to(room).broadcast.emit('typing-sent', data);
 
         });
     });

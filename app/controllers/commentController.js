@@ -9,7 +9,7 @@ const check = require('../libs/checkLib');
  require('./../models/comment');
 const CommentModel = mongoose.model('commentSchema_2');
 require('./../models/Issue');
-const IssueModel = mongoose.model('Issue_4')
+const issueModel = mongoose.model('Issue_4')
 
 let createComment = (comment) => {
     let commentMod = new CommentModel(comment)
@@ -42,8 +42,8 @@ let deleteComment = (commentId) => {
 }
 
 let getSingleComment =(req, res) => {
-IssueModel.find({
-iscommentId: req.params.commentId
+CommentModel.findOne({
+commentId: req.params.commentId
 }).select(' -__v -_id')
 .lean()
 .exec((err, result) => {
@@ -52,8 +52,84 @@ iscommentId: req.params.commentId
 }
 
 
+let addlike = (req, res) => {
+    let increase = {
+        modifiedOn: time.now(),
+        '$inc': {
+            "like": 1
+        },
+        '$push': {
+            "likegiver": req.body.likegiver
+        }
+    }
+    CommentModel.findOneAndUpdate({
+        'commentId': req.params.commentId
+    }, increase).exec((err, result) => {
+        callback.crudCallback(err, result, res, 'editTitleandDescription')
+    })
+
+} // end  addlike 
+let deletelike = (req, res) => {
+    let decrease = {
+        modifiedOn: time.now(),
+        '$inc': {
+            "like": -1
+        },
+        '$pull': {
+            "likegiver": req.body.likegiver
+        }
+    }
+    CommentModel.findOneAndUpdate({
+        'commentId': req.params.commentId
+    }, decrease).exec((err, result) => {
+        callback.crudCallback(err, result, res, 'editTitleandDescription')
+    })
+
+} // end  deletelike
+// adddislike
+let adddislike = (req, res) => {
+    let increase = {
+        modifiedOn: time.now(),
+        '$inc': {
+            "dislike": 1
+        },
+        '$push': {
+            "dislikegiver": req.body.dislikegiver
+        }
+    }
+    CommentModel.findOneAndUpdate({
+        'commentId': req.params.commentId
+    }, increase).exec((err, result) => {
+        callback.crudCallback(err, result, res, 'editTitleandDescription')
+    })
+
+} // end  adddislike 
+// deletedislike
+let deletedislike = (req, res) => {
+    let decrease = {
+        modifiedOn: time.now(),
+        '$inc': {
+            "dislike": -1
+        },
+        '$pull': {
+            "dislikegiver": req.body.dislikegiver
+        }
+    }
+    CommentModel.findOneAndUpdate({
+        'commentId': req.params.commentId
+    }, decrease).exec((err, result) => {
+        callback.crudCallback(err, result, res, 'editTitleandDescription')
+    })
+
+} // end  deletedislike
+
+
 module.exports ={
     createComment: createComment,
     deleteComment: deleteComment,
-    getSingleComment: getSingleComment
+    getSingleComment: getSingleComment,
+    addlike: addlike,
+    deletelike: deletelike,
+    adddislike: adddislike,
+    deletedislike: deletedislike,
 }
