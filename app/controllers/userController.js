@@ -40,12 +40,10 @@ let getSingleUser = (req, res) => {
 
 let getUserbyName = (req, res) => {
     UserModel.find().or([{
-            'firstName': req.body,
-            firstName,
+            'firstName': req.body.firstName,
             'lastName': req.body.lastName
         }, {
-            'firstName': req.body,
-            firstName
+            'firstName': req.body.firstName
         }]).select('-password -__v -_id')
         .lean()
         .exec((err, result) => {
@@ -67,7 +65,7 @@ let deleteUser = (req, res) => {
 let editUserName = (req, res) => {
     let options = {
         firstName: req.body.firstName,
-        lastName: req.body.lastName || ''
+        lastName: req.body.lastName
     };
     UserModel.updateOne({
         'userId': req.params.userId
